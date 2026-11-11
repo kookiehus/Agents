@@ -1,0 +1,356 @@
+import json, os, re, sys, io
+from PIL import Image
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab import rl_config
+import pypdf
+rl_config.useA85 = 0
+D, FONTS, SRC, OUT = sys.argv[1:5]
+W, H = 841.89, 1190.55
+for f in ('Montserrat-Regular','Montserrat-Medium','Montserrat-SemiBold','CormorantGaramond-Medium'):
+    pdfmetrics.registerFont(TTFont(f, f'{FONTS}/{f}.ttf'))
+sw = pdfmetrics.stringWidth
+R, M, SB, CG = 'Montserrat-Regular','Montserrat-Medium','Montserrat-SemiBold','CormorantGaramond-Medium'
+
+SEC = {  # accent, title
+ 'ЖЕНСКИЕ АРОМАТЫ': dict(acc=(0.45,0.27,0.31), title='Женские ароматы'),
+ 'МУЖСКИЕ АРОМАТЫ': dict(acc=(0.20,0.26,0.34), title='Мужские ароматы'),
+ 'УНИСЕКС':         dict(acc=(0.40,0.37,0.24), title='Унисекс'),
+ 'ПРЕМИУМ':         dict(acc=(0.30,0.23,0.23), title='Премиум'),
+}
+GROUP = {}
+for col, names in {
+ (0.66,0.36,0.47): 'Цветочные',
+ (0.72,0.47,0.20): 'Фруктовые Цитрусовые',
+ (0.22,0.50,0.52): 'Водные Акватические Ароматные Спокойные',
+ (0.45,0.34,0.60): 'Восточные Пряные',
+ (0.36,0.44,0.30): 'Древесные Шипровые Фужерные Табачные Кожаные Терпкие',
+ (0.58,0.42,0.24): 'Гурманские Ванильные',
+ (0.44,0.45,0.58): 'Мускусные Пудровые'}.items():
+    for n in names.split(): GROUP[n] = col
+DROP = {'Сладкие','Сладковатые','Свежие'}   # now expressed by the fresh-sweet scale
+SCALE = {'Свежий': 0.10, 'Свежий/сладкий': 0.5, 'Сладкий': 0.90}
+mix = lambda a, b, t: tuple(a[i]*(1-t)+b[i]*t for i in range(3))
+
+def parse(card):
+    t = card['texts']
+    name = ' '.join(x['t'].strip() for x in sorted([x for x in t if x['f']==SB and x['c'][0]<0.5], key=lambda x: x['y']))
+    ru = ' '.join(x['t'].strip() for x in sorted([x for x in t if x['f']==R and x['x']<150], key=lambda x: x['y']))
+    typ = ' '.join(x['t'].strip() for x in t if x['f']==M and abs(x['s']-9)<.3)
+    tiers = []; cur = None
+    for x in sorted([x for x in t if x['f']==R and x['x']>150], key=lambda x: x['y']):
+        if x['c'][0] > 0.4: cur = [x['t'].strip(), []]; tiers.append(cur)
+        elif cur: cur[1].append(x['t'].strip())
+    b = card['bottle']; os.makedirs(f"{D}/small", exist_ok=True); sm = f"{D}/small/{os.path.basename(b['file'])}"
+    if not os.path.exists(sm):
+        im = Image.open(f"{D}/{b['file']}"); th = int(b['h']/72*300)
+        if im.height > th: im = im.resize((max(1, round(im.width*th/im.height)), th), Image.LANCZOS)
+        im.save(sm)
+    return dict(code=card['code'], name=name, ru=ru, type=typ, tags=card['tags'], notes=[(h, ' '.join(l)) for h, l in tiers],
+                img=(f"{D}/small/{os.path.basename(b['file'])}", b['x'], b['y'], b['w'], b['h']))
+
+BASE = 0.756
+def styled_bottle(src):
+    """Cut-out bottle -> bottle + soft contact shadow + fading reflection (same structure as the existing images)."""
+    from PIL import ImageChops, ImageFilter
+    out = src.replace('.png', '_styled.png')
+    if os.path.exists(out): return out
+    im = Image.open(src).convert('RGBA'); im = im.crop(im.getchannel('A').getbbox())
+    k = 660 / im.height; im = im.resize((round(im.width*k), 660), Image.LANCZOS)
+    bw, bh = im.size; th = round(bh / BASE); pad = round(bw*0.04)
+    cv = Image.new('RGBA', (bw + 2*pad, th), (0, 0, 0, 0))
+    rf = im.transpose(Image.FLIP_TOP_BOTTOM); end = round(th*0.94) - bh
+    ramp = Image.new('L', (1, bh)); ramp.putdata([int(255*0.46*max(0.0, 1 - y/end)**1.35) for y in range(bh)])
+    rf.putalpha(ImageChops.multiply(rf.getchannel('A'), ramp.resize((bw, bh))))
+    cv.alpha_composite(rf.crop((0, 0, bw, th-bh)), (pad, bh))
+    foot = im.getchannel('A').crop((0, bh - round(bh*0.05), bw, bh)).resize((bw, 1), Image.BOX).point(lambda v: 255 if v > 20 else 0)
+    sh = Image.new('L', cv.size, 0); band = round(th*0.016)
+    sh.paste(foot.resize((bw, 2*band)), (pad, bh - band))
+    sh = sh.filter(ImageFilter.GaussianBlur(th*0.013)).point(lambda v: int(v*0.62))
+    shadow = Image.new('RGBA', cv.size, (12, 10, 10, 0)); shadow.putalpha(sh)
+    cv.alpha_composite(shadow); cv.alpha_composite(im, (pad, 0)); cv.save(out)
+    return out
+def styled(src):
+    path = styled_bottle(src)
+    im = Image.open(path); s = min(112/im.width, 158/im.height); w, h = im.width*s, im.height*s
+    return (path, 76-w/2, 233.45+h*(1-BASE)-h, w, h)
+def N(code, sec, p, name, ru, typ, tags, top, mid, base):
+    return dict(code=code, section=sec, name=name, ru=ru, type=typ, tags=tags, img=styled(f'{D}/new/p{p}_bottle.png'),
+                notes=[('ВЕРХНИЕ НОТЫ', top), ('НОТЫ СЕРДЦА', mid), ('БАЗОВЫЕ НОТЫ', base)])
+NEW = [
+ N('K9','ПРЕМИУМ',1,'BY KILIAN APPLE BRANDY ON THE ROCKS','Килиан Эппл Бренди он зе Рокс','Свежий/сладкий',['Фруктовые','Древесные','Пряные'],'бергамот, ананас, кардамон','яблоко, ром, бренди, ананас, ваниль, мох','кедр, амброксан'),
+ N('H2','УНИСЕКС',2,'HORMONE PARIS GABA','Гормон Пари Габа','Свежий',['Цитрусовые','Цветочные','Мускусные'],'итальянский мандарин, апельсин, лаванда','османтус, жасмин самбак','амброксан, акигалавуд, мускус'),
+ N('C3','ЖЕНСКИЕ АРОМАТЫ',3,'CAROLINA HERRERA LA BOMBA','Каролина Эррера Ла Бомба','Сладкий',['Цветочные','Фруктовые','Восточные'],'питахайя (драконий фрукт)','пион, красный франжипани','ваниль, пачули'),
+ N('J7','МУЖСКИЕ АРОМАТЫ',4,'JEAN PAUL GAULTIER LE MALE ELIXIR','Жан Поль Готье Ле Маль Эликсир','Сладкий',['Восточные','Фужерные','Сладкие'],'лаванда, мята','ваниль, бензоин','мёд, бобы тонка, табак'),
+ N('L22','УНИСЕКС',5,'LOUIS VUITTON SYMPHONY','Луи Виттон Симфони','Свежий',['Цитрусовые','Пряные','Фужерные','Свежие'],'грейпфрут, бергамот','имбирь','мускус'),
+ N('J6','ЖЕНСКИЕ АРОМАТЫ',6,'JULIETTE HAS A GUN POWDER LOVE','Джульетт Хэз Э Ган Паудер Лав','Сладкий',['Сладкие','Мускусные','Пудровые'],'сахарная вата, малина','маршмеллоу, цветок апельсина','миндаль, мускус, амброксан, бобы тонка'),
+]
+OVERRIDE = {('E25', 'ЖЕНСКИЕ АРОМАТЫ'): f'{D}/override/E25.png'}   # replaced bottle pictures
+FEATURE = {('V20', 'МУЖСКИЕ АРОМАТЫ')}                              # shown on its own feature page instead of a grid card
+def codekey(c): m = re.match(r'([A-Z]+)(\d+)', c); return (m.group(1), int(m.group(2)))
+raw = [c for c in json.load(open(f'{D}/cards.json')) if c['code'] != 'Z2']
+def section(sec):
+    it = []
+    for c in raw:
+        if c['section'] != sec or (c['code'], sec) in FEATURE: continue
+        p = parse(c)
+        if (c['code'], sec) in OVERRIDE: p['img'] = styled(OVERRIDE[(c['code'], sec)])
+        it.append(p)
+    it += [n for n in NEW if n['section'] == sec]
+    return sorted(it, key=lambda x: codekey(x['code']))
+
+def wrap_words(text, font, size, width):
+    lines = []; cur = ''
+    for w in text.split(' '):
+        t = (cur+' '+w).strip()
+        if sw(t, font, size) <= width or not cur: cur = t
+        else: lines.append(cur); cur = w
+    return lines + ([cur] if cur else [])
+def wrap_notes(text, size, width):
+    """Break only after a comma; a single over-long note falls back to word wrapping."""
+    notes = [n.strip() for n in text.split(',') if n.strip()]; lines = []; cur = ''
+    for i, n in enumerate(notes):
+        tok = n + (',' if i < len(notes)-1 else '')
+        t = (cur+' '+tok).strip()
+        if sw(t, R, size) <= width: cur = t
+        else:
+            if cur: lines.append(cur)
+            if sw(tok, R, size) <= width: cur = tok
+            else:
+                ws = wrap_words(tok, R, size, width); lines += ws[:-1]; cur = ws[-1]
+    return lines + ([cur] if cur else [])
+def balance(name, size, width):
+    ws = name.split(' '); best = None
+    for i in range(1, len(ws)):
+        a, b = ' '.join(ws[:i]), ' '.join(ws[i:])
+        wa, wb = sw(a, SB, size), sw(b, SB, size)
+        if wa <= width and wb <= width and (best is None or abs(wa-wb) < best[0]): best = (abs(wa-wb), [a, b])
+    return best[1] if best else wrap_words(name, SB, size, width)
+
+def rr(c, x0, top, x1, bottom, fill=None, stroke=None, r=None, lw=0.5):
+    r = (bottom-top)/2 if r is None else r
+    if fill: c.setFillColorRGB(*fill)
+    if stroke: c.setStrokeColorRGB(*stroke); c.setLineWidth(lw)
+    c.roundRect(x0, H-bottom, x1-x0, bottom-top, r, stroke=1 if stroke else 0, fill=1 if fill else 0)
+
+def card(c, it, gx, gt, sec):
+    dark = False; acc = SEC[sec]['acc']
+    c.drawImage(f'{D}/Glass1.png', gx, H-gt-284, 280.63, 284, mask='auto')
+    if dark: rr(c, gx+15.5, gt+14.5, gx+265.5, gt+269.5, fill=(0.125,0.105,0.095), stroke=(0.78,0.63,0.38), r=13, lw=0.6)
+    INK = (0.96,0.93,0.87) if dark else (0.17,0.13,0.14)
+    SUB = (0.70,0.66,0.60) if dark else (0.40,0.36,0.37)
+    def T(x, y, s, f, sz, col, cs=0):
+        t = c.beginText(gx+x, H-(gt+y)); t.setFont(f, sz); t.setFillColorRGB(*col); t.setCharSpace(cs); t.textOut(s); t.setCharSpace(0); c.drawText(t)
+    # --- fixed header zone -------------------------------------------------
+    rr(c, gx+26, gt+23.8, gx+62, gt+42.2, fill=acc)
+    T(44-sw(it['code'], SB, 11)/2, 36.8, it['code'], SB, 11, (0.13,0.10,0.09) if dark else (1,1,1))
+    NW = 184
+    for sz in (11, 10.5, 10, 9.5):
+        if sw(it['name'], SB, sz) <= NW: lines, size = [it['name']], sz; break
+    else: lines, size = balance(it['name'], 10, NW), 10
+    y = 36.6
+    for ln in lines[:2]: T(76, y, ln, SB, size, INK); y += 12
+    ru = it['ru']; rs = 8
+    while sw(ru, R, rs) > NW and rs > 6.5: rs -= 0.25
+    T(76, y, ru, R, rs, SUB); y += 11.5
+    # fresh <-> sweet scale
+    lab = 6.3; x0 = 76 + sw('свежий', M, lab) + 5; bw = 62
+    T(76, y+0.2, 'свежий', M, lab, (0.20,0.50,0.52) if not dark else (0.45,0.75,0.76))
+    for i in range(31):
+        c.setFillColorRGB(*mix((0.25,0.60,0.62), (0.74,0.30,0.42), i/30)); c.rect(gx+x0+i*bw/31, H-(gt+y-0.4), bw/31+0.3, 2.6, stroke=0, fill=1)
+    px = x0 + bw*SCALE.get(it['type'], 0.5)
+    c.setFillColorRGB(*((0.125,0.105,0.095) if dark else (1,1,1))); c.circle(gx+px, H-(gt+y-1.7), 4.1, stroke=0, fill=1)
+    c.setFillColorRGB(*mix((0.25,0.60,0.62), (0.74,0.30,0.42), SCALE.get(it['type'], 0.5))); c.circle(gx+px, H-(gt+y-1.7), 2.9, stroke=0, fill=1)
+    T(x0+bw+5, y+0.2, 'сладкий', M, lab, (0.74,0.30,0.42) if not dark else (0.90,0.55,0.63))
+    y += 6.5
+    # chips: muted, grouped palette, max 2 rows
+    tags = [t for t in it['tags'] if t not in DROP]; x = 76; row = 0; shown = 0
+    for i, tag in enumerate(tags):
+        w = sw(tag, M, 6.6) + 12
+        if x + w > 262:
+            if row == 1: T(x+2, y+8.3, f'+{len(tags)-i}', M, 6.6, SUB); break
+            x = 76; y += 13.6; row = 1
+        col = GROUP.get(tag, (0.5,0.45,0.45))
+        if dark: rr(c, gx+x, gt+y, gx+x+w, gt+y+11.4, stroke=mix(col, (1,1,1), 0.35), lw=0.5); tc = mix(col, (1,1,1), 0.55)
+        else: rr(c, gx+x, gt+y, gx+x+w, gt+y+11.4, fill=mix(col, (1,1,1), 0.82)); tc = mix(col, (0,0,0), 0.25)
+        T(x+6, y+8.0, tag, M, 6.6, tc); x += w + 3
+    # hairline between header and body zones
+    c.setStrokeColorRGB(*(mix(acc, (0,0,0), 0.45) if dark else (0.84,0.81,0.81))); c.setLineWidth(0.4); c.line(gx+28, H-(gt+108.5), gx+253, H-(gt+108.5))
+    # --- body: bottle + honest pyramid --------------------------------------
+    p, bx, by, bw_, bh = it['img']
+    c.drawImage(p, gx+bx, H-(gt+by+bh), bw_, bh, mask='auto')
+    TOP, BOT, TX, TW = 116.0, 262.0, 168.0, 91.0
+    fs = 8.0
+    while True:
+        blocks = [(h, wrap_notes(t, fs, TW)) for h, t in it['notes']]; lh = fs*1.2
+        need = sum(9.5 + len(b)*lh for _, b in blocks) + 5*(len(blocks)-1)
+        if need <= BOT-TOP or fs <= 6.6: break
+        fs -= 0.2
+    gap = (BOT-TOP - sum(9.5 + len(b)*lh for _, b in blocks)) / max(1, len(blocks)-1) if len(blocks) > 1 else 0
+    gap = min(gap, 26); total = sum(9.5 + len(b)*lh for _, b in blocks) + gap*(len(blocks)-1)
+    tops = []; yy = TOP
+    for h, b in blocks: tops.append(yy); yy += 9.5 + len(b)*lh + gap
+    end = BOT if len(blocks) > 1 else BOT
+    bounds = [TOP] + [tops[i] - gap/2 for i in range(1, len(blocks))] + [BOT]
+    base = acc if not dark else (0.78,0.63,0.38)
+    shades = [mix(base, (1,1,1), 0.62), mix(base, (1,1,1), 0.30), base] if len(blocks) == 3 else ([mix(base, (1,1,1), 0.30)] if len(blocks) == 1 else [mix(base, (1,1,1), 0.5), base])
+    if dark: shades = [mix(s, (0.125,0.105,0.095), 0.0) for s in shades]
+    CX = 151.0; half = lambda yv: 0.6 + 11.0*(yv-TOP)/(BOT-TOP)
+    for i in range(len(blocks)):
+        a, b_ = bounds[i] + (0.9 if i else 0), bounds[i+1]
+        c.setFillColorRGB(*shades[min(i, len(shades)-1)]); pth = c.beginPath()
+        pth.moveTo(gx+CX-half(a), H-(gt+a)); pth.lineTo(gx+CX+half(a), H-(gt+a)); pth.lineTo(gx+CX+half(b_), H-(gt+b_)); pth.lineTo(gx+CX-half(b_), H-(gt+b_)); pth.close()
+        c.drawPath(pth, stroke=0, fill=1)
+    for i, (h, b) in enumerate(blocks):
+        yy = tops[i] + 6.2
+        hc = mix(shades[min(i, len(shades)-1)], (0,0,0), 0.35) if not dark else mix(shades[min(i, len(shades)-1)], (1,1,1), 0.15)
+        T(TX, yy, h, M, 6.6, hc, cs=0.7); yy += 3.3
+        for ln in b: yy += lh; T(TX, yy, ln, R, fs, INK)
+
+def chrome(c, sec, codes, pno, total):
+    acc = SEC[sec]['acc']
+    c.setFillColorRGB(0.965,0.957,0.961); c.rect(0,0,W,H,stroke=0,fill=1)
+    c.drawImage(f'{D}/BgHead.png', 0, H-80, W, 80)
+    c.drawImage(f'{D}/logo.png', 42, H-60, 38, 40, mask='auto')
+    t = c.beginText(96, 1143.5); t.setFont(CG, 24); t.setFillColorRGB(0.97,0.93,0.85); t.setCharSpace(2.0); t.textOut('ETIB PARFUM'); t.setCharSpace(0); c.drawText(t)
+    title = SEC[sec]['title']; c.setFillColorRGB(0.23,0.165,0.135); c.setFont(CG, 25)
+    c.drawRightString(798, 1147, title); tw = sw(title, CG, 25)
+    rng = f'{codes[0]} — {codes[-1]}' if len(codes) > 1 else codes[0]
+    t = c.beginText(798 - sw(rng, M, 8) - 1.2*(len(rng)-1), 1132.5); t.setFont(M, 8); t.setFillColorRGB(0.36,0.27,0.23); t.setCharSpace(1.2); t.textOut(rng); t.setCharSpace(0); c.drawText(t)
+    c.setStrokeColorRGB(0.7,0.5,0.3); c.setLineWidth(0.6); c.line(330, H-39.8, 798-tw-18, H-39.8)
+    # section tab on the outer edge
+    idx = list(SEC).index(sec); c.setFillColorRGB(*acc); c.roundRect(W-8, H-(150+idx*90)-60, 14, 60, 4, stroke=0, fill=1)
+    # footer: clean line, disclaimer, page number
+    c.setStrokeColorRGB(0.80,0.74,0.70); c.setLineWidth(0.5); c.line(42, 34, W-42, 34)
+    s = 'ВСЕ ФЛАКОНЫ АРОМАТОВ ИЗГОТОВЛЕНЫ В ФИРМЕННОМ СТИЛЕ ETIB PARFUM'
+    t = c.beginText((W - sw(s, R, 7) - 1.6*(len(s)-1))/2, 18); t.setFont(R, 7); t.setFillColorRGB(0.36,0.29,0.27); t.setCharSpace(1.6); t.textOut(s); t.setCharSpace(0); c.drawText(t)
+    c.setFont(M, 8); c.setFillColorRGB(*acc); c.drawString(42, 18, title.upper())
+    c.setFillColorRGB(0.36,0.29,0.27); c.drawRightString(W-42, 18, f'{pno} / {total}')
+
+XS = [16.0, 280.5, 545.0]; YS = [78.0, 344.0, 610.0, 876.0]
+def grid_page(c, sec, items, pno, total, tail=False):
+    chrome(c, sec, [i['code'] for i in items], pno, total)
+    for i, it in enumerate(items):
+        rowlen = min(3, len(items) - (i//3)*3); off = (3-rowlen)*264.5/2 if tail else 0   # centre an incomplete row only above the tail photo
+        card(c, it, XS[i%3]+off, YS[i//3], sec)
+    if tail:
+        top = YS[(len(items)-1)//3] + 284 + 10
+        fn = f'{D}/store_feather.png'; im = Image.open(fn); avail = (H-34-70) - top; h = avail; w = h*im.width/im.height
+        if w > W-60: w = W-60; h = w*im.height/im.width
+        c.drawImage(fn, (W-w)/2, H-top-h, w, h, mask='auto')
+        c.setFillColorRGB(0.42,0.33,0.30); c.setFont(CG, 22); c.drawCentredString(W/2, 58, 'Твой аромат — твоё настроение')
+    c.showPage()
+
+def opener(path, sec, n, codes):
+    c = canvas.Canvas(path, pagesize=(W, H))
+    cream = (0.97,0.93,0.85); gold = (0.80,0.62,0.38)
+    s = 'ETIB PARFUM  ·  КОЛЛЕКЦИЯ'
+    t = c.beginText((W - sw(s, M, 11) - 4*(len(s)-1))/2, H-470); t.setFont(M, 11); t.setFillColorRGB(*cream); t.setCharSpace(4); t.textOut(s); t.setCharSpace(0); c.drawText(t)
+    c.setFillColorRGB(*cream); c.setFont(CG, 96); c.drawCentredString(W/2, H-580, SEC[sec]['title'].split()[0])
+    if len(SEC[sec]['title'].split()) > 1: c.drawCentredString(W/2, H-670, SEC[sec]['title'].split()[1])
+    yl = H-720; c.setStrokeColorRGB(*gold); c.setLineWidth(0.8); c.line(W/2-150, yl, W/2+150, yl)
+    c.setFillColorRGB(*gold); p = c.beginPath(); p.moveTo(W/2-5, yl); p.lineTo(W/2, yl+5); p.lineTo(W/2+5, yl); p.lineTo(W/2, yl-5); p.close(); c.drawPath(p, stroke=0, fill=1)
+    s = f'{n} АРОМАТОВ   ·   {codes[0]} — {codes[-1]}'
+    t = c.beginText((W - sw(s, M, 12) - 3*(len(s)-1))/2, yl-34); t.setFont(M, 12); t.setFillColorRGB(*cream); t.setCharSpace(3); t.textOut(s); t.setCharSpace(0); c.drawText(t)
+    c.showPage(); c.save()
+
+def para(c, x, y, text, font, size, width, lead, col, bold_prefix=None):
+    """Left-aligned paragraph; optional bold lead-in ('Сезон:'). Returns y after the last line."""
+    words = text.split(' '); line = []; first = True
+    def flush(ws, yy):
+        xx = x
+        if first and bold_prefix:
+            c.setFont(SB, size); c.setFillColorRGB(*col); c.drawString(xx, H-yy, bold_prefix); xx += sw(bold_prefix + ' ', SB, size)
+        c.setFont(font, size); c.setFillColorRGB(*col); c.drawString(xx, H-yy, ' '.join(ws))
+    for wd in words:
+        pre = sw(bold_prefix + ' ', SB, size) if (first and bold_prefix) else 0
+        if pre + sw(' '.join(line + [wd]), font, size) > width and line:
+            flush(line, y); y += lead; line = [wd]; first = False
+        else: line.append(wd)
+    if line: flush(line, y); y += lead
+    return y
+
+def cover_img(path, w, h, scale=3):
+    im = Image.open(path).convert('RGB'); tw, th = int(w*scale), int(h*scale)
+    r = max(tw/im.width, th/im.height); im = im.resize((max(tw, round(im.width*r)), max(th, round(im.height*r))), Image.LANCZOS)
+    x, y = (im.width-tw)//2, (im.height-th)//2; out = path.rsplit('.', 1)[0] + f'_{tw}x{th}.jpg'
+    im.crop((x, y, x+tw, y+th)).save(out, quality=88); return out
+
+def feature_page(c, sec, card, f, pno, total):
+    """Single-fragrance page in the style of the new-arrivals sheets: photo collage, big code, notes, description panel."""
+    chrome(c, sec, [card['code']], pno, total)
+    INK = (0.13,0.10,0.10); top, ch = 80.0, 440.0; cw = W/3
+    for i, ph in enumerate(f['photos']):
+        c.drawImage(cover_img(ph, cw, ch, 2), i*cw, H-top-ch, cw+0.5, ch)
+    gfn = f'{D}/v20/topfade.png'   # soft darkening behind the title
+    g = Image.new('RGBA', (1, 256)); g.putdata([(0, 0, 0, int(255*0.45*(1-i/255)**1.5)) for i in range(256)]); g.save(gfn)
+    c.drawImage(gfn, 0, H-top-250, W, 250, mask='auto')
+    y = top + 92
+    for ln in f['title']:
+        t = c.beginText(44, H-y); t.setFont(SB, 58); t.setFillColorRGB(1,1,1); t.setCharSpace(-2.6); t.textOut(ln); t.setCharSpace(0); c.drawText(t); y += 56
+    # bottle over the collage edge
+    b = card['bottle']; bh = 400.0; bw = bh*b['w']/b['h']
+    big = f"{D}/v20/bottle_big.png"; Image.open(f"{D}/{b['file']}").resize((round(bw*3), round(bh*3)), Image.LANCZOS).save(big)
+    c.drawImage(big, W/2-bw/2, H-(top+ch-175)-bh, bw, bh, mask='auto')
+    # code + facts (left), notes (right)
+    y0 = top + ch + 92
+    t = c.beginText(44, H-y0); t.setFont(SB, 92); t.setFillColorRGB(*INK); t.setCharSpace(-3); t.textOut(card['code']); t.setCharSpace(0); c.drawText(t)
+    y = y0 + 40
+    for k, v in f['facts']: y = para(c, 44, y, v, R, 15, 270, 21, INK, bold_prefix=k + ':')
+    y = y0 - 30
+    for k, v in f['notes']: y = para(c, 560, y, v, R, 15, 250, 21, INK, bold_prefix=k + ':') + 2
+    # description panel
+    pt, pb = 792.0, H-52; c.setFillColorRGB(*f['panel']); c.roundRect(34, H-pb, W-68, pb-pt, 18, stroke=0, fill=1)
+    c.setFillColorRGB(*INK); c.setFont(SB, 20); c.drawString(64, H-(pt+44), 'КОМУ ПОДОЙДЁТ'); c.drawString(400, H-(pt+44), 'КАК ЗВУЧИТ')
+    y = pt + 74
+    for k, v in f['who']: y = para(c, 64, y, v, R, 13.5, 290, 19.5, INK, bold_prefix=k + ':')
+    y2 = para(c, 400, pt+74, f['sound'], R, 13.5, 380, 19.5, INK)
+    y = max(y, y2) + 26
+    c.setFont(SB, 20); c.setFillColorRGB(*INK); c.drawCentredString(W/2, H-y, 'МАРКЕТИНГОВОЕ ОПИСАНИЕ')
+    para(c, 80, y+32, f['promo'], R, 13.5, W-160, 20, INK)
+    c.showPage()
+
+V20 = dict(
+ photos=[f'{D}/v20/lime.jpg', f'{D}/v20/cardamom.jpg', f'{D}/v20/amber.jpg'], title=['Versace Man', 'Eau Fraîche'], panel=(0.84,0.90,0.87),
+ facts=[('Направление', 'древесное · акватическое · цитрусовое'), ('Производитель', 'Versace'), ('Пол', 'мужской'), ('Парфюмер', 'Оливье Кресп, 2006')],
+ notes=[('Верхние', 'лимон, бергамот, карамбола, розовое дерево, кардамон'), ('Средние', 'эстрагон, шалфей, кедр, перец'), ('Базовые', 'амбра, мускус, шафран, платан')],
+ who=[('Сезон', 'весна, лето, жаркая погода'), ('Случай', 'повседневный, офис, отдых, спорт, путешествия'),
+      ('Стиль', 'для тех, кто любит чистую морскую свежесть без сладости и хочет лёгкий, ненавязчивый аромат на каждый день')],
+ sound='Сочный старт с лимоном, бергамотом и кисло-сладкой карамболой, слегка подогретый кардамоном и розовым деревом. В сердце раскрываются зелёные травы — эстрагон и шалфей — с кедром и щепоткой перца. База тёплая и чистая: амбра, мускус и светлая древесина платана.',
+ promo='Средиземноморское утро во флаконе: солёный бриз, цитрусы и прогретое солнцем дерево. Свежий древесно-акватический аромат для мужчин, которые ценят лёгкость и уверенность без лишних слов. Универсален — от офиса до отпуска, и особенно хорош в жару.',
+)
+
+ORDER = list(SEC)
+plan = []   # (kind, section, payload)
+for sec in ORDER:
+    items = section(sec)
+    for i in range(0, len(items), 12): plan.append(('grid', sec, items[i:i+12]))
+    for code, fs in sorted(FEATURE):
+        if fs == sec: plan.append(('feature', sec, next(c for c in raw if c['code'] == code and c['section'] == sec)))
+    if sec == ORDER[0]: plan += [('src', sec, 8), ('src', sec, 9)]
+total = len(plan)
+tmp = f'{D}/v2_cards.pdf'; c = canvas.Canvas(tmp, pagesize=(W, H), pageCompression=1); c.setTitle('ETIB PARFUM catalog')
+for n, (kind, sec, pl) in enumerate(plan, 1):
+    if kind == 'grid':
+        last_women = sec == ORDER[0] and len(pl) <= 6
+        grid_page(c, sec, pl, n, total, tail=last_women)
+    elif kind == 'feature': feature_page(c, sec, pl, V20, n, total)
+c.save()
+src = pypdf.PdfReader(SRC); gen = iter(pypdf.PdfReader(tmp).pages); w = pypdf.PdfWriter()
+for kind, sec, pl in plan: w.add_page(src.pages[pl] if kind == 'src' else next(gen))
+from pypdf.generic import NameObject
+seen = set()
+for pg in w.pages:   # flate RGB images -> JPEG (alpha masks stay lossless)
+    xo = pg['/Resources'].get('/XObject', {})
+    for k in xo:
+        o = xo[k].get_object()
+        if id(o) in seen or o.get('/Subtype') != '/Image': continue
+        seen.add(id(o)); flt = o.get('/Filter'); flt = [flt] if not isinstance(flt, list) else list(flt)
+        if flt != ['/FlateDecode'] or o.get('/ColorSpace') != '/DeviceRGB' or o.get('/BitsPerComponent') != 8 or '/DecodeParms' in o: continue
+        rawd = o.get_data(); wd, ht = o['/Width'], o['/Height']
+        if len(rawd) != wd*ht*3: continue
+        buf = io.BytesIO(); Image.frombytes('RGB', (wd, ht), rawd).save(buf, 'JPEG', quality=90, subsampling=0)
+        o._data = buf.getvalue(); o[NameObject('/Filter')] = NameObject('/DCTDecode')
+w.write(OUT)
+print('pages', total, os.path.getsize(OUT)//1024, 'KB', [(k, s[:4], len(p) if k == 'grid' else '') for k, s, p in plan])
