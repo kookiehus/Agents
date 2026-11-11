@@ -201,10 +201,36 @@ def draw_new(c, n, gx, gt):
         T(167, yy, h, 'Montserrat-Regular', 8, HEADC)
         for ln in ls: yy += 9.2; T(167, yy, ln, 'Montserrat-Regular', 8, DARK)
         y += len(ls)*9.2 + gap
-    im = Image.open(f"{D}/new/p{n['p']}_bottle.png"); bb = im.getchannel('A').getbbox()
-    cf = f"{D}/new/p{n['p']}_bottle_crop.png"; im.crop(bb).save(cf)
-    iw, ih = bb[2]-bb[0], bb[3]-bb[1]; s = min(104/iw, 150/ih); w, h = iw*s, ih*s
-    c.drawImage(small(cf, h), gx+76-w/2, H-(gt+266), w, h, mask='auto')
+    fn, bw, bh = styled_bottle(f"{D}/new/p{n['p']}_bottle.png")
+    s = min(112/bw, 158/bh); w, h = bw*s, bh*s
+    # same anchoring as the existing cards: centred on x=76, bottle base on y=233.4
+    c.drawImage(fn, gx+76-w/2, H-(gt+233.45+h*(1-BASE)), w, h, mask='auto')
+
+BASE = 0.756   # share of the image height taken by the bottle itself (rest: shadow + reflection)
+def styled_bottle(src):
+    """Cut-out bottle -> bottle + soft floor shadow + fading mirror reflection, like the existing catalog images."""
+    out = src.replace('.png', '_styled.png')
+    im = Image.open(src).convert('RGBA'); im = im.crop(im.getchannel('A').getbbox())
+    k = 660 / im.height
+    im = im.resize((round(im.width*k), 660), Image.LANCZOS)
+    bw, bh = im.size; th = round(bh / BASE); gap = round(th*0.022)
+    cv = Image.new('RGBA', (bw, th), (0, 0, 0, 0))
+    # reflection
+    rf = im.transpose(Image.FLIP_TOP_BOTTOM)
+    a = rf.getchannel('A'); ramp = Image.new('L', (1, bh)); end = round(th*0.945) - (bh+gap)
+    ramp.putdata([int(255*0.42*max(0.0, 1 - y/end)**1.6) for y in range(bh)])
+    from PIL import ImageChops
+    rf.putalpha(ImageChops.multiply(a, ramp.resize((bw, bh))))
+    cv.alpha_composite(rf.crop((0, 0, bw, th-bh-gap)), (0, bh+gap))
+    # floor shadow
+    sh = Image.new('L', (bw, th), 0); d = ImageDraw.Draw(sh); sy = bh + gap*0.45; rh = th*0.012
+    d.ellipse((bw*0.06, sy-rh, bw*0.94, sy+rh), fill=165)
+    sh = sh.filter(ImageFilter.GaussianBlur(th*0.008))
+    shadow = Image.new('RGBA', (bw, th), (20, 14, 14, 0)); shadow.putalpha(sh)
+    cv.alpha_composite(shadow)
+    cv.alpha_composite(im, (0, 0))
+    cv.save(out)
+    return out, bw, th
 
 def chrome(c, title):
     c.setFillColorRGB(0.965,0.957,0.961); c.rect(0,0,W,H,stroke=0,fill=1)
