@@ -10,6 +10,7 @@ rl_config.useA85 = 0
 
 D, FONTS, SRC, OUT = sys.argv[1:5]
 W, H = 841.89, 1190.55
+OVERRIDE = {'E25': 'ЖЕНСКИЕ АРОМАТЫ'}  # code -> section of cards whose bottle image is replaced
 COLLAGE = False  # note-photo collage panels behind bottles (off: original card look)
 for f in ('Montserrat-Regular','Montserrat-Medium','Montserrat-SemiBold','CormorantGaramond-Medium'):
     pdfmetrics.registerFont(TTFont(f, f'{FONTS}/{f}.ttf'))
@@ -158,7 +159,9 @@ def draw_old(c, card, gx, gt):
             for a, b in s['pts'][1:]: p.lineTo(gx+a, H-(gt+b))
             p.close(); c.drawPath(p, stroke=0, fill=1)
     b = card['bottle']
-    if b: c.drawImage(small(f"{D}/{b['file']}", b['h']), gx+b['x'], H-(gt+b['y']+b['h']), b['w'], b['h'], mask='auto')
+    ov = f"{D}/override/{card['code']}.png"   # replacement cut-outs (e.g. E25)
+    if os.path.exists(ov) and card['section'] == OVERRIDE.get(card['code']): draw_styled(c, ov, gx, gt)
+    elif b: c.drawImage(small(f"{D}/{b['file']}", b['h']), gx+b['x'], H-(gt+b['y']+b['h']), b['w'], b['h'], mask='auto')
     for t in card['texts']:
         c.setFillColorRGB(*t['c']); c.setFont(t['f'], t['s']); c.drawString(gx+t['x'], H-(gt+t['y']), t['t'])
 
@@ -201,36 +204,43 @@ def draw_new(c, n, gx, gt):
         T(167, yy, h, 'Montserrat-Regular', 8, HEADC)
         for ln in ls: yy += 9.2; T(167, yy, ln, 'Montserrat-Regular', 8, DARK)
         y += len(ls)*9.2 + gap
-    fn, bw, bh = styled_bottle(f"{D}/new/p{n['p']}_bottle.png")
-    s = min(112/bw, 158/bh); w, h = bw*s, bh*s
-    # same anchoring as the existing cards: centred on x=76, bottle base on y=233.4
-    c.drawImage(fn, gx+76-w/2, H-(gt+233.45+h*(1-BASE)), w, h, mask='auto')
+    draw_styled(c, f"{D}/new/p{n['p']}_bottle.png", gx, gt)
 
 BASE = 0.756   # share of the image height taken by the bottle itself (rest: shadow + reflection)
 def styled_bottle(src):
-    """Cut-out bottle -> bottle + soft floor shadow + fading mirror reflection, like the existing catalog images."""
+    """Cut-out bottle -> bottle + soft contact shadow + fading mirror reflection.
+
+    Mirrors the structure of the existing catalog images (reference: G11): the reflection
+    starts right at the bottle base with no gap, and a wide blurred shadow sits on the contact line.
+    """
+    from PIL import ImageChops
     out = src.replace('.png', '_styled.png')
     im = Image.open(src).convert('RGBA'); im = im.crop(im.getchannel('A').getbbox())
     k = 660 / im.height
     im = im.resize((round(im.width*k), 660), Image.LANCZOS)
-    bw, bh = im.size; th = round(bh / BASE); gap = round(th*0.022)
-    cv = Image.new('RGBA', (bw, th), (0, 0, 0, 0))
-    # reflection
-    rf = im.transpose(Image.FLIP_TOP_BOTTOM)
-    a = rf.getchannel('A'); ramp = Image.new('L', (1, bh)); end = round(th*0.945) - (bh+gap)
-    ramp.putdata([int(255*0.42*max(0.0, 1 - y/end)**1.6) for y in range(bh)])
-    from PIL import ImageChops
-    rf.putalpha(ImageChops.multiply(a, ramp.resize((bw, bh))))
-    cv.alpha_composite(rf.crop((0, 0, bw, th-bh-gap)), (0, bh+gap))
-    # floor shadow
-    sh = Image.new('L', (bw, th), 0); d = ImageDraw.Draw(sh); sy = bh + gap*0.45; rh = th*0.012
-    d.ellipse((bw*0.06, sy-rh, bw*0.94, sy+rh), fill=165)
-    sh = sh.filter(ImageFilter.GaussianBlur(th*0.008))
-    shadow = Image.new('RGBA', (bw, th), (20, 14, 14, 0)); shadow.putalpha(sh)
+    bw, bh = im.size; th = round(bh / BASE); pad = round(bw*0.04)
+    cv = Image.new('RGBA', (bw + 2*pad, th), (0, 0, 0, 0))
+    # reflection: flipped bottle touching the base, fading out by ~94% of the image height
+    rf = im.transpose(Image.FLIP_TOP_BOTTOM); end = round(th*0.94) - bh
+    ramp = Image.new('L', (1, bh)); ramp.putdata([int(255*0.46*max(0.0, 1 - y/end)**1.35) for y in range(bh)])
+    rf.putalpha(ImageChops.multiply(rf.getchannel('A'), ramp.resize((bw, bh))))
+    cv.alpha_composite(rf.crop((0, 0, bw, th-bh)), (pad, bh))
+    # contact shadow: follows the bottle's footprint (bottom slice of its silhouette), blurred
+    foot = im.getchannel('A').crop((0, bh - round(bh*0.05), bw, bh)).resize((bw, 1), Image.BOX).point(lambda v: 255 if v > 20 else 0)
+    sh = Image.new('L', cv.size, 0); band = round(th*0.016)
+    sh.paste(foot.resize((bw, 2*band)), (pad, bh - band))
+    sh = sh.filter(ImageFilter.GaussianBlur(th*0.013)).point(lambda v: int(v*0.62))
+    shadow = Image.new('RGBA', cv.size, (12, 10, 10, 0)); shadow.putalpha(sh)
     cv.alpha_composite(shadow)
-    cv.alpha_composite(im, (0, 0))
+    cv.alpha_composite(im, (pad, 0))
     cv.save(out)
-    return out, bw, th
+    return out, cv.width, th
+
+def draw_styled(c, src, gx, gt):
+    fn, bw, bh = styled_bottle(src)
+    s = min(112/bw, 158/bh); w, h = bw*s, bh*s
+    # same anchoring as the existing images: centred on x=76, bottle base on y=233.45
+    c.drawImage(fn, gx+76-w/2, H-(gt+233.45+h*(1-BASE)), w, h, mask='auto')
 
 def chrome(c, title):
     c.setFillColorRGB(0.965,0.957,0.961); c.rect(0,0,W,H,stroke=0,fill=1)
