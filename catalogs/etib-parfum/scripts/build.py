@@ -10,6 +10,7 @@ rl_config.useA85 = 0
 
 D, FONTS, SRC, OUT = sys.argv[1:5]
 W, H = 841.89, 1190.55
+COLLAGE = False  # note-photo collage panels behind bottles (off: original card look)
 for f in ('Montserrat-Regular','Montserrat-Medium','Montserrat-SemiBold','CormorantGaramond-Medium'):
     pdfmetrics.registerFont(TTFont(f, f'{FONTS}/{f}.ttf'))
 sw = pdfmetrics.stringWidth
@@ -148,7 +149,7 @@ def draw_glass(c, gx, gt):
 
 def draw_old(c, card, gx, gt):
     draw_glass(c, gx, gt)
-    panel(c, gx, gt, [LIB[k][0] for k in pick_photos(tiers_of(card), card['tags'], card['type'], card['code'])])
+    if COLLAGE: panel(c, gx, gt, [LIB[k][0] for k in pick_photos(tiers_of(card), card['tags'], card['type'], card['code'])])
     for s in card['shapes']:
         if s['n'] == 10: rrect(c, gx+s['bbox'][0], gt+s['bbox'][1], gx+s['bbox'][2], gt+s['bbox'][3], s['c'])
         else:
@@ -172,7 +173,7 @@ def wrap(text, font, size, width):
 
 def draw_new(c, n, gx, gt):
     draw_glass(c, gx, gt)
-    panel(c, gx, gt, [f"p{n['p']}_ph{i}" for i in (1,2,3)])
+    if COLLAGE: panel(c, gx, gt, [f"p{n['p']}_ph{i}" for i in (1,2,3)])
     T = lambda x, y, s, f, sz, col: (c.setFillColorRGB(*col), c.setFont(f, sz), c.drawString(gx+x, H-(gt+y), s))
     rrect(c, gx+26, gt+23.8, gx+62, gt+42.2, (0.3,0.23,0.23))
     T(44 - sw(n['code'],'Montserrat-SemiBold',11)/2, 36.8, n['code'], 'Montserrat-SemiBold', 11, (1,1,1))
