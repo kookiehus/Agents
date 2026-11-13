@@ -221,6 +221,9 @@ def page_bg(pno):
     name, cx = SHOPS[(pno - 1) % len(SHOPS)]; out = f'{D}/shops/bg_{name}_{int(cx*100)}.jpg'
     if not os.path.exists(out):
         im = Image.open(f'{D}/shops/{name}.png').convert('RGBA'); base = Image.new('RGBA', im.size, (255, 255, 255, 255)); base.alpha_composite(im); im = base.convert('RGB')
+        import numpy as np
+        px_ = np.array(im).astype(int); chk = (px_.min(axis=2) > 222) & ((px_.max(axis=2) - px_.min(axis=2)) < 9)   # flatten the baked-in transparency checkerboard
+        px_[chk] = 255; im = Image.fromarray(px_.astype('uint8'))
         cw = im.height*W/H; x0 = min(max(0, im.width*cx - cw/2), im.width - cw)
         im = im.crop((round(x0), 0, round(x0 + cw), im.height)).resize((1240, 1754), Image.LANCZOS)
         page = Image.new('RGB', im.size, (246, 244, 245)); Image.blend(page, im, BG_ALPHA).save(out, quality=88)
