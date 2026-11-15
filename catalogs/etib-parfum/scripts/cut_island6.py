@@ -12,9 +12,14 @@ lab, n = nd.label(fg); sz = nd.sum(fg, lab, range(1, n + 1)); fg = lab == (np.ar
 from PIL import ImageDraw
 def poly(pts):
     m = Image.new('L', (w, h), 0); ImageDraw.Draw(m).polygon(pts, fill=255); return np.array(m) > 0
-cabinet = poly([(1030, 588), (1456, 538), (1456, 862), (1442, 940), (1030, 978), (1016, 950), (1016, 600)])
-solid = cabinet | poly([(638, 150), (764, 150), (764, 336), (638, 336)]) | (poly([(816, 286), (874, 286), (874, 348), (816, 348)]) & (I.max(axis=2) < 45))
-fg = nd.binary_fill_holes(nd.binary_closing(fg | cabinet | solid, iterations=4))
+cabinet = poly([(1030, 590), (1452, 536), (1453, 873), (1410, 867), (1402, 870), (1080, 975), (1077, 987), (1030, 989), (1016, 950), (1016, 600)])
+sign = poly([(641.5, 156.5), (759.5, 153.5), (759, 319), (768, 318), (768, 341), (634, 343), (634, 324), (643, 325)])
+excl = poly([(0, 490), (70, 490), (90, 504), (548, 966), (573, 978), (1030, 996), (1078, 990), (1080, 978), (1402, 872), (1451, 876), (1535, 876), (1535, 1024), (0, 1024)]) \
+     | poly([(0, 0), (81, 0), (81, 505), (0, 505)]) | poly([(1451, 0), (1535, 0), (1535, 1024), (1451, 1024)]) \
+     | (poly([(628, 140), (775, 140), (775, 268), (628, 268)]) & ~sign)
+excl &= ~cabinet
+solid = cabinet | sign | (poly([(816, 286), (874, 286), (874, 348), (816, 348)]) & (I.max(axis=2) < 45))
+fg = nd.binary_fill_holes(nd.binary_closing(fg | cabinet | solid, iterations=4)) & ~excl
 # 2) backdrop estimate behind the object (inpaint from the surroundings)
 k = 4; small = cv2.resize(I, (w//k, h//k), interpolation=cv2.INTER_AREA)
 ms = cv2.resize(nd.binary_dilation(fg | cabinet, iterations=12).astype(np.uint8)*255, (w//k, h//k), interpolation=cv2.INTER_NEAREST)
@@ -25,7 +30,7 @@ a = np.clip((diff - 10) / 28, 0, 1)
 a = np.maximum(a, (If.max(axis=2) < 28) * (B.max(axis=2) > 45))        # truly black trims stay solid
 a = np.maximum(a, solid.astype(float)); a = cv2.GaussianBlur(a, (0, 0), 0.7)
 soft = cv2.GaussianBlur(fg.astype(float), (0, 0), 1.0)
-alpha = a * soft
+alpha = a * soft * (1 - cv2.GaussianBlur(excl.astype(float), (0, 0), 0.6))
 F = (If - (1 - alpha[..., None]) * B) / np.maximum(alpha[..., None], 1e-3)  # un-mix the dark backdrop
 F = np.clip(F, 0, 255)
 out = np.dstack([F, alpha * 255]).astype(np.uint8)
