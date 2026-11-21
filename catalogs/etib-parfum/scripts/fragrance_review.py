@@ -74,6 +74,11 @@ NOTES = {
  ('S3', 'P'): [(T, 'сицилийский апельсин, калабрийский лимон, бергамот'), (H_, 'фруктовые ноты'), (B_, 'белый мускус, ваниль, амбра')],
 }
 
+NAMES = {   # two different Trussardi Donna fragrances, told apart by year
+ ('T2', 'W'): ('DONNA TRUSSARDI 1994', 'Донна Труссарди 1994'),
+ ('T15', 'W'): ('TRUSSARDI DONNA 2011', 'Труссарди Донна 2011'),
+}
+
 def label(pos):
     return 'Свежий' if pos < 0.4 else ('Сладкий' if pos > 0.62 else 'Свежий/сладкий')
 
@@ -84,4 +89,5 @@ def apply_review(sec, items):
         if c in POS[k]: it['pos'] = POS[k][c]
         if (c, k) in TAGS: it['tags'] = TAGS[(c, k)]
         if (c, k) in NOTES: it['notes'] = NOTES[(c, k)]
+        if (c, k) in NAMES: it['name'], it['ru'] = NAMES[(c, k)]
     return items
