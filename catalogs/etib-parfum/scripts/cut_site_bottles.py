@@ -4,7 +4,8 @@ import sys, os, json, numpy as np, cv2
 from PIL import Image, ImageFilter
 from scipy import ndimage as nd
 mp, root, out = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(out, exist_ok=True)
-def cut(path):
+HOLES = {'H4|ЖЕН', 'H14|ЖЕН', 'M5|ЖЕН', 'M20|ЖЕН', 'M17|УНИ', 'P15|МУЖ'}   # openings (cord loop, pendant, trophy handles) stay see-through
+def cut(path, holes=False):
     im = np.array(Image.open(path).convert('RGB')).astype(np.float32)/255
     corners = np.concatenate([im[:4, :4].reshape(-1, 3), im[:4, -4:].reshape(-1, 3), im[-4:, :4].reshape(-1, 3), im[-4:, -4:].reshape(-1, 3)])
     white = corners.mean() > 0.85
@@ -13,11 +14,18 @@ def cut(path):
     bg0 = mx <= (14 if white else 6)/255
     lab, n = nd.label(bg0); border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
     bg = np.isin(lab, list(border))
-    obj = nd.binary_fill_holes(~bg)
+    if holes:
+        dk = mx <= 40/255; lab_, n_ = nd.label(dk)                             # dark enclosed openings (loop, handles) also go
+        edge_ = set(np.unique(np.concatenate([lab_[0], lab_[-1], lab_[:, 0], lab_[:, -1]]))) - {0}
+        szs = nd.sum(dk, lab_, range(1, n_ + 1)); open_ = np.isin(lab_, [i + 1 for i, s_ in enumerate(szs) if s_ > 300 and (i + 1) not in edge_])
+        obj = ~bg0 & ~open_; small = nd.binary_fill_holes(obj) & ~obj; lab_, n_ = nd.label(small)
+        if n_: sz_ = nd.sum(small, lab_, range(1, n_ + 1)); obj = obj | np.isin(lab_, [i + 1 for i, s_ in enumerate(sz_) if s_ < 120])
+    else: obj = nd.binary_fill_holes(~bg)
     lab, n = nd.label(obj)
     if n > 1:
         sz = nd.sum(obj, lab, range(1, n+1)); obj = np.isin(lab, [i+1 for i, s in enumerate(sz) if s > 0.004*obj.sum()])
-    obj = nd.binary_opening(obj, iterations=1); obj = nd.binary_fill_holes(obj)
+    obj = nd.binary_opening(obj, iterations=1)
+    if not holes: obj = nd.binary_fill_holes(obj)
     # soft edge: on black, observed = alpha * colour; colour taken from the nearest solid pixel inside
     inner = nd.binary_erosion(obj, iterations=3)
     idx = nd.distance_transform_edt(~inner, return_distances=False, return_indices=True)
@@ -44,7 +52,7 @@ def cut(path):
     return big, touches
 m = json.load(open(mp)); rep = {}
 for key, rel in m.items():
-    code, sec = key.split('|'); im, t = cut(os.path.join(root, rel))
+    code, sec = key.split('|'); im, t = cut(os.path.join(root, rel), key in HOLES)
     fn = f"{out}/{code}_{sec}.png"; im.save(fn); rep[key] = dict(file=fn, touches=bool(t))
 json.dump(rep, open(f'{out}/index.json', 'w'), ensure_ascii=False, indent=0)
 print(len(rep), 'cut;', 'touch the photo edge:', [k for k, v in rep.items() if v['touches']])
