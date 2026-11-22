@@ -19,7 +19,7 @@ def aa_poly(pts):
     return cv2.resize(m.astype(np.float32)/255, (w, h), interpolation=cv2.INTER_AREA)
 body = aa_poly(BODY)
 capm = cap.copy(); capm[356:] = 0
-capm = cv2.GaussianBlur((capm > 0.5).astype(np.float32), (0, 0), 1.0); capm = np.clip((capm - 0.5)*2 + 0.5, 0, 1)
+capm = cv2.GaussianBlur((capm > 0.5).astype(np.float32), (0, 0), 1.6); capm = np.clip((capm - 0.5)*2 + 0.5, 0, 1)
 a = np.maximum(body, capm)
 # smooth glass tone instead of ragged backdrop streaks
 inb = body > 0.5
@@ -34,6 +34,19 @@ rgb = rgb*(1 - wgt) + glass*wgt
 # pixels outside the photo's object but inside the polygon (corners): same glass tone
 outside = (body > 0.02) & (cap < 0.5) & (np.arange(h)[:, None] >= 356)
 rgb = np.where((outside & backdrop)[..., None] | (outside & (mn > 0.7))[..., None], glass, rgb)
+# clean glass edge: a band along the outline gets a smooth tone sampled further inside (no ragged backdrop bits)
+dist = nd.distance_transform_edt(body > 0.5)
+src_zone = ((dist > 11) & (dist < 20)).astype(np.float32)
+samp = np.dstack([nd.gaussian_filter(rgb[..., i]*src_zone, 10) for i in range(3)]) / np.maximum(nd.gaussian_filter(src_zone, 10), 1e-4)[..., None]
+band = np.clip((11 - dist)/4, 0, 1)[..., None]*(body > 0.02)[..., None]
+edge_tone = samp*0.75 + np.array([0.86, 0.85, 0.90])*0.25
+rgb = rgb*(1 - band) + edge_tone*band
+# rose cap: edge pixels take the cap's own colour, outline smoothed (no light fringe)
+capcore = nd.binary_erosion(capm > 0.5, iterations=3)
+if capcore.any():
+    ci = nd.distance_transform_edt(~capcore, return_distances=False, return_indices=True)
+    capedge = (capm > 0.02) & ~capcore & (np.arange(h)[:, None] < 356)
+    rgb = np.where(capedge[..., None], rgb[ci[0], ci[1]], rgb)
 # thin even rim along the body outline
 sol = (body > 0.5).astype(np.uint8); rim = cv2.GaussianBlur((sol - cv2.erode(sol, np.ones((3, 3), np.uint8), iterations=2)).astype(np.float32), (0, 0), 0.7)
 rgb = rgb*(1 - 0.55*rim[..., None]) + np.array([0.93, 0.92, 0.95])*0.55*rim[..., None]
