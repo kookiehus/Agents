@@ -31,5 +31,13 @@ edge2 = (a > 0.02) & ~nd.binary_erosion(a > 0.5, iterations=4)        # any rema
 ref2 = rgb[idx[0], idx[1]]; rgb = np.where((edge2 & (ref2.mean(axis=2) < 0.3) & (rgb.mean(axis=2) > ref2.mean(axis=2) + 0.05))[..., None], ref2, rgb)
 lum = rgb.mean(axis=2, keepdims=True); dk = np.clip((0.45 - lum)/0.35, 0, 1)            # phone photo: greyish, cool blacks -> deep neutral black like the studio shots
 rgb = rgb*(1 - dk) + ((lum + (rgb - lum)*0.4)**1.35)*dk
+pink = (rgb[..., 0] - rgb[..., 2] > 0.06) & (rgb.mean(axis=2) > 0.30) & (a > 0.3)   # tassel: as rich as the bottle
+pk = cv2.GaussianBlur(nd.binary_opening(pink, iterations=1).astype(np.float32), (0, 0), 1.5)[..., None]
+lum = rgb.mean(axis=2, keepdims=True); rich = np.clip(lum + (rgb - lum)*1.45, 0, 1); rich = np.clip((rich - 0.5)*1.12 + 0.5 - 0.03, 0, 1)
+rgb = rgb*(1 - pk) + rich*pk
+m_ = a > 0.5; ry = np.where(m_.any(axis=1))[0]; t_, b_ = ry[0], ry[-1]
+body_l = int(np.median([np.where(m_[y])[0].min() for y in range(int(t_ + (b_ - t_)*0.85), int(t_ + (b_ - t_)*0.97))]))
+cut = max(0, body_l - 45); ramp = np.clip((np.arange(a.shape[1]) - cut)/6.0, 0, 1)[None, :]   # tassel trimmed close to the body
+a = a*ramp
 ys, xs = np.where(a > 0.02); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
 Image.fromarray((np.dstack([np.clip(rgb, 0, 1), a])[y0:y1, x0:x1]*255).astype(np.uint8), 'RGBA').save(out)
