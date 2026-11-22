@@ -64,7 +64,7 @@ NEW = [('C17', 'ЖЕН', 'C17', True, 0.30), ('E5', 'ЖЕН', 'E5', True, None),
        ('V11', 'ЖЕН', 'BOMB', False, None), ('V19', 'ЖЕН', 'V19', False, None), ('V22', 'ЖЕН', 'V22', True, None),
        ('B8', 'МУЖ', 'B8', True, None), ('B7', 'УНИ', 'B7', True, None), ('R1', 'УНИ', 'R1', True, None),
        ('L4', 'ПРЕ', 'L4', True, None), ('L3', 'ПРЕ', 'L3', True, None), ('N10', 'ПРЕ', 'N10', True, None),
-       ('S3', 'ПРЕ', 'S3', True, None), ('S4', 'ПРЕ', 'S4', True, None)]
+       ('S3', 'ПРЕ', 'S3', True, None), ('S4', 'ПРЕ', 'S4', True, None), ('S16', 'ЖЕН', 'S16', False, None)]
 done = {}
 for code, sec, up, fill, cap in NEW:
     if up not in done:
