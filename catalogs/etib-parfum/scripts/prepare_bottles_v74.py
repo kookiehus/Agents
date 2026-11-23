@@ -22,17 +22,43 @@ def rim(rgb, a, band, dark=0.06):
     t = np.clip((band + 1 - d)/band, 0, 1)[..., None]
     return rgb*(1 - t) + rgb[idx[0], idx[1]]*(1 - dark*t)*t
 
+def gentle(rgb, a, name, contrast=1.06):
+    """Pastel bottles: no levels stretch (it turns soft pink into raspberry); only a touch of contrast and sharpening."""
+    from PIL import ImageEnhance
+    ys, xs = np.where(a > 0.02); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    img = Image.fromarray((np.dstack([np.clip(rgb, 0, 1), np.clip(a, 0, 1)])[y0:y1, x0:x1]*255).astype(np.uint8), 'RGBA')
+    k = 900/img.height; img = img.resize((round(img.width*k), 900), Image.LANCZOS)
+    c = ImageEnhance.Contrast(img.convert('RGB')).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
+    Image.merge('RGBA', (*c.split(), img.getchannel('A'))).save(f'{OUT}/{name}'); print(name, img.size)
+
 # simple studio shots
-for name, out, kw in (('A17', 'A17_МУЖ.png', dict(rim=0.20)), ('A1', 'A1_МУЖ.png', {}), ('D9', 'D9_ЖЕН.png', {})):
+for name, out, kw in (('A17', 'A17_МУЖ.png', dict(rim=0.20)), ('A1', 'A1_МУЖ.png', {})):
     rgb, cut = load(name); a = smooth_mask(cut > 0.45)
     finish(rim(fill_own(rgb, cut, a), a, 3), a, out, **kw)
 
-# L8 La Vie Est Belle on flat light grey: the clear lower glass defeats rembg; mask = everything that differs from the grey,
-# the glass keeps the photo's own pixels (no edge recolouring inside the clear part)
-rgb, cut = load('L8'); bg = np.median(rgb[:20, :20].reshape(-1, 3), axis=0)
-m = np.abs(rgb - bg).max(axis=2) > 7/255; m = nd.binary_closing(m, iterations=3)
-a = smooth_mask(m, 1.4)
-finish(rim(rgb, a, 3), a, 'L8_ЖЕН.png')
+# L8 La Vie Est Belle on flat light grey: exact geometry (the clear glass defeats any mask): straight-sided glass block with
+# rounded corners, square cap, neck with the knurled ring; the grey ribbon is taken from the colour mask. Glass keeps its own pixels.
+rgb, cut = load('L8'); h, w = cut.shape; bg = np.median(rgb[:20, :20].reshape(-1, 3), axis=0)
+cm = np.abs(rgb - bg).max(axis=2) > 7/255; cm = nd.binary_closing(cm, iterations=3); cm = nd.binary_fill_holes(cm)
+body = down(poly_mask(h, w, [(545.5, 381.0), (1061.5, 381.0), (1061.5, 949.5), (545.5, 949.5)], 22), h, w)
+capL8 = down(poly_mask(h, w, [(712.0, 147.0), (890.5, 147.0), (890.5, 242.0), (712.0, 242.0)], 4), h, w)
+neck = down(poly_mask(h, w, [(737.0, 236.0), (865.0, 236.0), (865.0, 384.0), (737.0, 384.0)], 2), h, w)
+rib = cm.copy(); rib[:236] = False; rib[392:] = False; rib[:, :862] = False
+rib = smooth_mask(rib, 1.2)
+a = np.maximum.reduce([body, capL8, neck, rib])
+gentle(rim(rgb, a, 2, dark=0.0), a, 'L8_ЖЕН.png', contrast=1.08)
+
+# D9 Miss Dior on white: straight-sided glass block (exact), bow and cap from the cut-out; softer tone so it does not shout
+rgb, cut = load('D9'); h, w = cut.shape
+top = smooth_mask(cut > 0.45); top[600:] = 0
+body = down(poly_mask(h, w, [(51.5, 560.0), (901.5, 560.0), (901.5, 1431.0), (51.5, 1431.0)], 26), h, w)
+a = np.maximum(np.minimum(top, 1), body)
+rgb = fill_own(rgb, cut, a)
+lumD = rgb.mean(axis=2, keepdims=True); rgb = np.clip(lumD + (rgb - lumD)*0.80, 0, 1)*0.97      # calmer pink
+dD = nd.distance_transform_edt(a > 0.5); whiteD = (rgb.min(axis=2) > 0.80) & (dD < 40) & (np.arange(h)[:, None] > 560)   # white photo background seen through the thick glass walls
+wgt = (whiteD*np.clip((40 - dD)/40, 0, 1))[..., None]; wgt = cv2.GaussianBlur(wgt[..., 0].astype(np.float32), (0, 0), 2)[..., None]
+rgb = rgb*(1 - wgt*0.42) + np.array([0.08, 0.06, 0.07])*wgt*0.42
+gentle(rim(rgb, a, 3), a, 'D9_ЖЕН.png', contrast=1.04)
 
 # D18 on black with a mirror floor: cut just under the glass base
 rgb, cut = load('D18'); h, w = cut.shape
@@ -45,7 +71,7 @@ finish(rim(fill_own(rgb, cut, a), a, 3), a, 'D18_МУЖ.png'); print('D18 cut at
 # K2 Kayali: faceted octagonal block + white faceted cap (strawberries and marshmallows touch it)
 rgb, cut = load('K2'); h, w = cut.shape
 xl, xr, yt, yb = 417.0, 828.5, 493.0, 1101.5
-body = down(poly_mask(h, w, [(xl + 64, yt), (xr - 62, yt), (xr, yt + 84), (xr, yb - 50), (xr - 42, yb), (xl + 42, yb), (xl, yb - 60), (xl, yt + 80)], 3), h, w)
+body = down(poly_mask(h, w, [(xl + 80, yt), (xr - 78, yt), (xr, yt + 100), (xr, yb - 66), (xr - 56, yb), (xl + 56, yb), (xl, yb - 74), (xl, yt + 96)], 3), h, w)
 capm = (cut > 0.5); capm[:250] = False; capm[420:] = False; capm[:, :505] = False; capm[:, 765:] = False
 cap = (down(poly_mask(h, w, [(564, 259), (660, 259), (706, 335), (676, 408), (548, 408), (518, 335)], 2), h, w))
 neck = down(poly_mask(h, w, [(547, 400), (677, 400), (677, 496), (547, 496)], 2), h, w)
@@ -55,15 +81,17 @@ red = (rgb[..., 0] - rgb[..., 1] > 0.22) & (a > 0.02)          # strawberry pixe
 red = nd.binary_dilation(red, iterations=3)
 good = (a > 0.5) & ~red; gi = nd.distance_transform_edt(~good, return_distances=False, return_indices=True)
 rgb = np.where(red[..., None], rgb[gi[0], gi[1]], rgb); rgb = np.where(red[..., None], cv2.GaussianBlur(rgb, (0, 0), 2.0), rgb)
-def gentle(rgb, a, name, contrast=1.06):
-    """Pastel bottles: no levels stretch (it turns soft pink into raspberry); only a touch of contrast and sharpening."""
-    from PIL import ImageEnhance
-    ys, xs = np.where(a > 0.02); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    img = Image.fromarray((np.dstack([np.clip(rgb, 0, 1), np.clip(a, 0, 1)])[y0:y1, x0:x1]*255).astype(np.uint8), 'RGBA')
-    k = 900/img.height; img = img.resize((round(img.width*k), 900), Image.LANCZOS)
-    c = ImageEnhance.Contrast(img.convert('RGB')).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
-    Image.merge('RGBA', (*c.split(), img.getchannel('A'))).save(f'{OUT}/{name}'); print(name, img.size)
-gentle(rim(rgb, a, 7), a, 'K2_ЖЕН.png')
+# the bevelled corner facets mirror the beige table: paint them in the body colour sampled further inside
+corners = [((xl + 80, yt), (xl, yt + 96)), ((xr - 78, yt), (xr, yt + 100)), ((xr, yb - 66), (xr - 56, yb)), ((xl + 56, yb), (xl, yb - 74))]
+yy_, xx_ = np.mgrid[0:h, 0:w]; facet = np.zeros((h, w), bool)
+for (x1_, y1_), (x2_, y2_) in corners:
+    dx, dy = x2_ - x1_, y2_ - y1_; L_ = np.hypot(dx, dy)
+    dist = np.abs((xx_ - x1_)*dy - (yy_ - y1_)*dx)/L_; tpar = ((xx_ - x1_)*dx + (yy_ - y1_)*dy)/L_**2
+    facet |= (dist < 34) & (tpar > -0.25) & (tpar < 1.25)
+facet &= (a > 0.02) & (yy_ > yt - 2)
+good = (a > 0.5) & ~facet & (yy_ > yt + 4); gi = nd.distance_transform_edt(~good, return_distances=False, return_indices=True)
+rgb = np.where(facet[..., None], rgb[gi[0], gi[1]], rgb); rgb = np.where(facet[..., None], cv2.GaussianBlur(rgb, (0, 0), 3.0), rgb)
+gentle(rim(rgb, a, 9), a, 'K2_ЖЕН.png')
 
 # E33 Essential Parfums: rectangular glass block with rounded corners + cylindrical cap (wood shavings touch the glass)
 rgb, cut = load('E33'); h, w = cut.shape
