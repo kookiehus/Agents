@@ -78,6 +78,37 @@ def styled_lit(src, refl=0.85, lift=(1.9, 62), tag='_v57lit'):
     path = out.replace('.png', '_lit.png')
     im = Image.open(path); s_ = min(112/im.width, 158/im.height); w, h = im.width*s_, im.height*s_
     return (path, 76 - w/2, 233.45 + h*(1 - BASE) - h, w, h)
+CLEAN73 = {'ЖЕН': ('C4', 'D1', 'D3', 'E10', 'G2', 'G4', 'H4', 'H14', 'L8', 'V23', 'Z1'), 'МУЖ': ('T1', 'K23'), 'УНИ': ('L10',), 'ПРЕ': ('N10', 'T14', 'L4', 'K5')}
+SCALE73 = {('ПРЕ', 'T14'): 0.86, ('ПРЕ', 'T20'): 0.88, ('МУЖ', 'C36'): 0.90, ('МУЖ', 'C10'): 0.92, ('ПРЕ', 'K4'): 0.92}   # very wide bottles brought in line with their row
+def rescale(img, f):
+    p, x, y, w, h = img; w2, h2 = w*f, h*f
+    return (p, 76 - w2/2, 233.45 + h2*(1 - BASE) - h2, w2, h2)
+NAME73 = {('ЖЕН', 'A10'): ('GIVENCHY ANGE OU DEMON LE SECRET', 'Живанши Анж у Демон Ле Секрет'),
+          ('ЖЕН', 'V9'): ("VICTORIA'S SECRET BOMBSHELL 2", None), ('ЖЕН', 'V11'): ("VICTORIA'S SECRET BOMBSHELL 3", None),
+          ('ЖЕН', 'E10'): ("LANVIN ECLAT D'ARPÈGE", "Ланвин Эклат д'Арпеж"),
+          ('МУЖ', 'K23'): ("KENZO L'EAU PAR KENZO POUR HOMME", 'Кензо Ло Пар Кензо Пур Хомм'),
+          ('МУЖ', 'D18'): ('ALFRED DUNHILL DESIRE BLUE', 'Альфред Данхилл Дизайр Блю'),
+          ('МУЖ', 'L17'): ('LACOSTE L.12.12 WHITE', 'Лакост Л.12.12 Уайт'),
+          ('ПРЕ', 'K4'): ("BY KILIAN ANGELS' SHARE", 'Бай Килиан Энджелс Шер'),
+          ('ПРЕ', 'B9'): ('MARC-ANTOINE BARROIS TILIA 2024', None)}
+RU73 = [(r"Л'Эндерди", "Л'Энтерди"), (r'Кензо Ле Пар', 'Кензо Ло Пар'), (r'\bГермес\b', 'Эрмес'), (r'\bМэйсон\b', 'Мезон'),
+        (r'Хэз Э Ган', 'Хэз э Ган'), (r'Джульетта Хэз', 'Джульетт Хэз'), (r'\bЭТИБ\b', 'Этиб'), (r'Жан Поль Готье', 'Жан-Поль Готье'),
+        (r'\bХом\b', 'Хомм')]
+NOTE73 = [(r'пачули из Индонезии, пачули', 'индонезийские пачули'), (r'индонезийский пачули', 'индонезийские пачули'),
+          (r'гурьюнский бальзам', 'бальзам гурджун'), (r'вирджинск', 'виргинск'), (r'цеталокс \(cetalox\)', 'цеталокс'), (r'\bлед\b', 'лёд')]
+def polish_text(s3, it):
+    """v73 proofreading fixes (names, transliterations, notes)."""
+    import re as _r
+    nm = NAME73.get((s3, it['code']))
+    if nm:
+        it['name'] = nm[0]
+        if nm[1]: it['ru'] = nm[1]
+    for a_, b_ in RU73: it['ru'] = _r.sub(a_, b_, it.get('ru', ''))
+    it['notes'] = [(h_, _r.sub(r'(?<!\w)лед(?!\w)', 'лёд', _polish_note(t_))) for h_, t_ in it['notes']]
+def _polish_note(t_):
+    import re as _r
+    for a_, b_ in NOTE73[:-1]: t_ = _r.sub(a_, b_, t_)
+    return t_
 def section(sec):
     items = apply_fragrantica(SEC_KEY[sec], apply_review(sec, _section0(sec)))
     for it in items:
@@ -99,6 +130,11 @@ def section(sec):
         if it['code'] == 'V23': it['img'] = styled(f"{D}/bottles_v27/V23_ЖЕН.png", refl=0.20, tag='_v34')   # pale bevelled base: softer reflection, no grey slab under it
         if it['code'] == 'V22': it['img'] = styled(f"{D}/bottles_v33/V22_ЖЕН.png", tag='_v33')   # white strip under the base removed (scripts/fix_bottles_v33.py)
         if it['code'] == 'V19': it['img'] = styled(f"{D}/bottles_v30/V19_ЖЕН.png", tag='_v30')   # owner's photo (scripts/prepare_bottles_v30.py)
+        k3 = (sec[:3], it['code'])
+        if k3[1] in CLEAN73.get(k3[0], ()): it['img'] = styled(f"{D}/bottles_v73/{it['code']}_{sec[:3]}.png", refl=0.20 if it['code'] == 'V23' else 0.46, tag='_v73')   # v73: outlines cleaned (scripts/clean_bottles_v73.py)
+        if k3 == ('ПРЕ', 'K6'): it['img'] = styled(f"{D}/bottles_site/K6_ПРЕ.png", refl=0.22, tag='_v73k')      # softer reflection under the label block
+        if k3 in SCALE73: it['img'] = rescale(it['img'], SCALE73[k3])
+        polish_text(sec[:3], it)
     if sec[:3] == 'ЖЕН':                                                       # both Trussardi Donna in the same bottle (as T2)
         by = {it['code']: it for it in items}
         if 'T2' in by and 'T15' in by: by['T15']['img'] = by['T2']['img']
@@ -430,7 +466,7 @@ def end_women(c, sec, items):
     c.drawImage(fn, xI, H - yI - ih*k, wI, ih*k, mask='auto'); c.restoreState()
     tx = X0
     y = heading(c, tx, T + 30, 'ETIB PARFUM', ['ПОСЛУШАЙТЕ', 'АРОМАТ', 'ВЖИВУЮ'], 27)
-    y = para(c, tx, y + 26, 'Любой аромат из этого каталога можно попробовать прямо сейчас. Консультант поможет сравнить и подобрать ваш.', R, 9.2, 196, 14, (0.2, 0.2, 0.2))
+    y = para(c, tx, y + 26, 'Любой аромат из этого каталога можно попробовать прямо сейчас. Консультант поможет сравнить ароматы и подобрать ваш.', R, 9.2, 196, 14, (0.2, 0.2, 0.2))
     button(c, tx, y + 12, 'СПРОСИТЕ КОНСУЛЬТАНТА')
     c.showPage()
 def end_men(c, sec, items):
@@ -439,7 +475,7 @@ def end_men(c, sec, items):
     x0, t, x1, b = cell_box(1, 0, 2)
     y = heading(c, x0, t + 8, 'ETIB PARFUM', ['АРОМАТ —', 'ПОДПИСЬ,', 'КОТОРУЮ СТАВЯТ', 'БЕЗ СЛОВ'], 43, lead=44)
     hline(c, x0, x1, b - 30, INK, 0.6); button(c, x0, b - 21, 'ВЫБЕРИТЕ СВОЮ ПОДПИСЬ')
-    fn = f'{D}/shops/white_fade_hi.png'   # v73: 2x upscale; iw, ih = Image.open(fn).size; h_ = W*ih/iw; top_ = b + (H - 40 - b - h_)/2 + 10
+    fn = f'{D}/shops/white_fade_hi.png'; iw, ih = Image.open(fn).size; h_ = W*ih/iw; top_ = b + (H - 40 - b - h_)/2 + 10   # v73: 2x upscale
     c.drawImage(fn, 0, H - top_ - h_, W, h_, mask='auto')
     c.setFillColorRGB(1, 1, 1); c.rect(0, 0, W, 31, stroke=0, fill=1); footer(c)
     c.showPage()
@@ -486,7 +522,7 @@ def end_unisex(c, sec, items):
     c.drawImage(fn, 0, -34, W, h_, mask='auto')
     y = heading(c, ML, top_ + 44, 'ETIB PARFUM', ['ТВОЙ АРОМАТ —', 'ТВОЁ НАСТРОЕНИЕ'], 30, WHITE, SOFT)
     tx = 598.0
-    y = para(c, tx, H - 150, 'Сегодня — лёгкий и свежий, завтра — тёплый и глубокий. Выбирайте не один аромат на все случаи, а свой на каждый день.', R, 9.5, MR - tx, 14.5, (0.95, 0.92, 0.90))
+    y = para(c, tx, H - 150, 'Сегодня — лёгкий и свежий, завтра — тёплый и глубокий. Выбирайте не один аромат на все случаи, а свой на\u00a0каждый\u00a0день.', R, 9.5, MR - tx, 14.5, (0.95, 0.92, 0.90))
     button(c, tx, y + 8, 'ВЫБЕРИТЕ АРОМАТ ПОД НАСТРОЕНИЕ', fill=WHITE, col=INK)
     txt(c, MR, H - 16, FOOT, M, 5.6, (0.85, 0.80, 0.77), cs=1.5, align='r')
     c.showPage()
@@ -532,11 +568,11 @@ def awards_page(c):
     c.drawImage(terra_bg(), 0, 0, W, H); topbar(c, WHITE, SOFT, (1, 1, 1))
     lines = ['ПОБЕДИТЕЛЬ', 'МЕЖДУНАРОДНЫХ', 'ПРЕМИЙ']; sz = fit_size(lines, XB, W - 2*ML, 110); y = 150.0
     txt(c, ML, y, 'ETIB PARFUM  ·  НАГРАДЫ', B, 8, SOFT, cs=2.2); y += sz*0.78 + 22
-    for ln in lines: txt(c, ML - sz*0.045, y, ln, XB, sz, WHITE, cs=-0.03*sz); y += sz*0.92
-    mw = W - 2*ML + 16; med = Image.open(f'{D}/awards/medals.png'); mh = mw*med.height/med.width; mt = y - sz*0.92 + 62
+    for ln in lines: txt(c, ML - sz*0.045, y, ln, XB, sz, WHITE, cs=-0.03*sz); y += sz*1.00   # v73: more leading, the breve of Й no longer touches Н
+    mw = W - 2*ML + 16; med = Image.open(f'{D}/awards/medals.png'); mh = mw*med.height/med.width; mt = y - sz*1.00 + 62
     ms = medals_staged(); mh2 = mw*Image.open(ms).height/med.width            # v68: medals stand on a mirror floor
     c.drawImage(ms, ML - 8, H - mt - mh2, mw, mh2, mask='auto')
-    data = [('2025', 'НОМЕР ОДИН', 'Бренд парфюмерии белорусского производства №1'),
+    data = [('2025', 'НОМЕР ОДИН', 'Бренд парфюмерии белорусского производства №\u00a01'),
             ('2025', 'НАРОДНЫЙ ВЫБОР', 'Магазин парфюмерной косметики'),
             ('2026', 'НАРОДНЫЙ ВЫБОР', 'Магазин парфюмерной косметики')]
     ty = mt + mh + 58; cw = (W - 2*ML - 2*24)/3
@@ -594,7 +630,7 @@ SEC_PH = {ORDER[0]: ('z1/flower.jpg', dict(sat=0.85, tint=(1.05, 0.86, 0.74), ga
           ORDER[3]: ('notes/vanilla.jpg', dict(sat=0.60, tint=(0.98, 0.84, 0.72), gain=0.66, focus=(0.5, 0.4)))}
 def ink_logo(col, tag):
     """Brand logo recoloured (the original file is cream, for dark grounds)."""
-    out = f'{D}/ed/logo_{tag}.png'
+    out = f'{D}/ed/logo_hi_{tag}.png'
     if not os.path.exists(out):
         lg = Image.open(f'{D}/logo_hi.png').convert('RGBA'); a_ = lg.getchannel('A')
         im = Image.new('RGBA', lg.size, tuple(int(v*255) for v in col) + (0,)); im.putalpha(a_); im.save(out)
