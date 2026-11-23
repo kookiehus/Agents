@@ -1,12 +1,12 @@
 """Photos for the staff website (etibparfum-catalog): each fragrance's bottle on the catalogue's dark warm-graphite panel,
-3:4 portrait, same cut-outs, colour work, reflections and common base line as catalogue v50. Also writes the note pyramids.
+3:4 portrait, same cut-outs, colour work, reflections and common base line as catalogue v58 (was v50). Also writes the note pyramids.
 Usage: python3 site_card_photos.py <copy of assets/data> <assets/fonts> <out dir>"""
 import sys, os, json
 here = os.path.dirname(os.path.abspath(__file__))
 D_ARG, FONTS_ARG, OUTDIR = sys.argv[1:4]
-src = open(os.path.join(here, 'build_editorial_v50.py'), encoding='utf-8').read()
+src = open(os.path.join(here, 'build_editorial_v58.py'), encoding='utf-8').read()
 src = src[:src.index("tmp = f'{D}/ed_cards.pdf'")]
-sys.argv = [os.path.join(here, 'build_editorial_v50.py'), D_ARG, FONTS_ARG, 'none', '/dev/null']
+sys.argv = [os.path.join(here, 'build_editorial_v58.py'), D_ARG, FONTS_ARG, 'none', '/dev/null']
 __file__ = sys.argv[0]
 exec(compile(src, sys.argv[0], 'exec'))
 from reportlab.pdfgen import canvas as _cv

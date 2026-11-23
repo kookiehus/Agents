@@ -1,4 +1,4 @@
-"""Updates the staff website (kookiehus/etibparfum-catalog) from catalogue v50:
+"""Updates the staff website (kookiehus/etibparfum-catalog) from catalogue v58 (first written for v50):
 fragrance photos (bottle on the dark warm panel, scripts/site_card_photos.py), note pyramids, fresh/sweet type,
 corrected names; new fragrances of the catalogue are added; the trainer's top/heart/base notes follow the pyramids.
 Usage: python3 update_site_catalog.py <site repo dir> <site_card_photos out dir>"""
