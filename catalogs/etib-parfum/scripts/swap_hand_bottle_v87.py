@@ -75,17 +75,17 @@ Bw = Bw*np.array([1.02, 1.0, 0.97])                                             
 # compositing
 occs = cv2.GaussianBlur(occ.astype(np.float32), (0, 0), 1.0)
 d_occ = nd.distance_transform_edt(~occ)
-shadow = np.clip(1 - d_occ/22, 0, 1)*0.45*(Mw > 0.5)                                  # contact shadow of fingers on the glass
+shadow = np.clip(1 - d_occ/30, 0, 1)**1.5*0.16*(Mw > 0.5)                                  # contact shadow of fingers on the glass
 Bw = Bw*(1 - shadow[..., None])
 # cast shadow of the woman's fingertip on the cap and of the thumb on the glass (light from the upper left)
 cast = np.zeros((hh, hw), np.float32); sh_src = (nailm | skin).astype(np.float32)
 M_sh = np.float32([[1, 0, 16], [0, 1, 22]]); cast = cv2.warpAffine(sh_src, M_sh, (hw, hh))
-cast = cv2.GaussianBlur(cast, (0, 0), 9)*(1 - occ)*(Mw > 0.5)
-Bw = Bw*(1 - 0.55*cast[..., None])
+cast = cv2.GaussianBlur(cast, (0, 0), 18)*(1 - occ)*(Mw > 0.5)
+Bw = Bw*(1 - 0.20*cast[..., None])
 tipsh = cv2.warpAffine(nailm.astype(np.float32), np.float32([[1, 0, -6], [0, 1, 30]]), (hw, hh))        # the fingertip shades the cap right under it
-tipsh = cv2.GaussianBlur(tipsh, (0, 0), 14)*(1 - occ)*(Mw > 0.5)
-Bw = Bw*(1 - 0.75*np.clip(tipsh*1.4, 0, 1)[..., None])
-Aw = np.maximum(Aw, np.clip(tipsh*1.4, 0, 1)*0.6*(Mw > 0.5))                           # the clear glass under the shadow reads darker, not see-through
+tipsh = cv2.GaussianBlur(tipsh, (0, 0), 22)*(1 - occ)*(Mw > 0.5)
+Bw = Bw*(1 - 0.28*np.clip(tipsh*1.4, 0, 1)[..., None])
+Aw = np.maximum(Aw, np.clip(tipsh*1.4, 0, 1)*0.2*(Mw > 0.5))                           # the clear glass under the shadow reads darker, not see-through
 oldd = nd.binary_dilation(old, iterations=3)
 res_rgb = rgb.copy(); res_a = al.copy()
 res_a = np.where(oldd & ~occ, 0.0, res_a)                                             # remove the old bottle
