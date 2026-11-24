@@ -1,7 +1,7 @@
-"""v101: owner's new shop interior photo for page 18 (end of the men's section).
+"""v101/v102: owner's new shop interior photo for page 18 (end of the men's section).
 The source has a baked-in grey/white checkerboard. It is found as neutral pixels where both checker tones
 (~234 and ~254) are present in a 15 px window, grown pixel by pixel up to the store outline, then the
-outline is smoothed. The floor blurs progressively and fades into the page across the full width.
+outline is smoothed. The floor (only the floor, between the plinth lines) blurs and fades into the page.
 Usage: cut_shop_v101.py <src.png> <out.png>"""
 import sys
 import numpy as np, cv2
@@ -34,20 +34,26 @@ core = nd.binary_erosion(obj, iterations=3)
 ni = nd.distance_transform_edt(~core, return_distances=False, return_indices=True)
 rgb = np.where((~core)[..., None], a[ni[0], ni[1]], a)
 
-# floor: progressive blur toward the bottom, extended to the full width, then faded into the page
-Y0, Y1, F0, F1 = 760, 1000, 930, h - 4
-blur = cv2.GaussianBlur(rgb, (0, 0), 9)
-wb = np.clip((np.arange(h) - Y0)/(Y1 - Y0), 0, 1); wb = (wb*wb*(3 - 2*wb))[:, None, None]
+# floor only (v102): the polygon between the two plinth lines blurs and fades into the page;
+# the cabinets and their bottom corners stay sharp and solid
+FLOOR = [(91, 1060), (558, 745), (905, 745), (1332, 1061), (1332, h), (91, h)]
+fm = np.zeros((h*4, w*4), np.uint8); cv2.fillPoly(fm, [(np.array(FLOOR, np.float32)*4).astype(np.int32)], 255)
+fm = cv2.resize(fm, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
+fm = cv2.GaussianBlur(fm, (0, 0), 2.0)[..., None]
+ys = np.arange(h)[:, None, None].astype(np.float32)
+Y0, Y1, F0, F1 = 800, 1000, 900, 1046
+blur = cv2.GaussianBlur(rgb, (0, 0), 7)
+wb = np.clip((ys - Y0)/(Y1 - Y0), 0, 1); wb = wb*wb*(3 - 2*wb)*fm
 rgb = rgb*(1 - wb) + blur*wb
-floor = obj.copy(); floor[:880] = False
-fill = nd.distance_transform_edt(~floor, return_distances=False, return_indices=True)
-ext = cv2.GaussianBlur(rgb[fill[0], fill[1]], (0, 0), 25)
-ys = np.arange(h)[:, None]
-side = np.clip((ys - 880)/120.0, 0, 1)                         # extension only near the floor line
-rgb = np.where(obj[..., None], rgb, ext)
-al = np.maximum(al, side*(ys >= 880))
-f = np.clip((ys - F0)/(F1 - F0), 0, 1); f = f*f*(3 - 2*f)
-al = al*(1 - f)
+f = np.clip((ys - F0)/(F1 - F0), 0, 1); f = (f*f*(3 - 2*f))*fm
+al = al*(1 - f[..., 0])
+# exact bottom of the two cabinet plinths (lit strip), nothing below them
+LB = [(0, 1061.5), (45, 1061.5), (77.5, 1064.5), (91, 1060), (91, h), (0, h)]
+RB = [(1332, 1061), (1358, 1061), (1369, 1067.5), (1408, 1067.5), (w, 1067.5), (w, h), (1332, h)]
+cutm = np.zeros((h*4, w*4), np.uint8)
+for P in (LB, RB): cv2.fillPoly(cutm, [(np.array(P, np.float32)*4).astype(np.int32)], 255)
+cutm = cv2.resize(cutm, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
+al = al*(1 - cutm)
 
 im = Image.fromarray(np.dstack([np.clip(rgb, 0, 255), al*255]).astype(np.uint8), 'RGBA')
 im = im.resize((w*2, h*2), Image.LANCZOS)
