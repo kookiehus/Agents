@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from scipy import ndimage as nd
 SRC, OUT = sys.argv[1:3]; os.makedirs(OUT, exist_ok=True); K = 4
 
-def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False):
+def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True):
     rgb = np.array(Image.open(f'{SRC}/{src}').convert('RGB')).astype(np.float32)/255; h, w = rgb.shape[:2]
     A = np.array(Image.open(f'{SRC}/{name}_rb.png'))[..., 3] > thr
     lab, n = nd.label(A); c = np.bincount(lab.ravel()); c[0] = 0; A = nd.binary_fill_holes(lab == np.argmax(c))
@@ -29,7 +29,7 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     a = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
     if raw:                                                          # v133: keep the given mask's own top edge (black-on-black)
         a = np.minimum(a, cv2.GaussianBlur(A.astype(np.float32), (0, 0), 1.0))
-    e = max(5, int(round(h/350))*2 + 1)
+    e = max(5, int(round(h/350))*2 + 1) if recolor else 1   # v134: black-on-black keeps its own bright rim
     inner = cv2.erode((a > 0.99).astype(np.uint8), np.ones((e, e), np.uint8)).astype(bool)
     gi = nd.distance_transform_edt(~inner, return_distances=False, return_indices=True)
     rgb = np.where(((a > 0.01) & ~inner)[..., None], rgb[gi[0], gi[1]], rgb)
@@ -40,8 +40,10 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'V26':                               # v134: V26 Aqua Kiss mist, symmetric
+    cut('V26', 'V26.jpg', thr=100, color=1.06, contrast=1.06); sys.exit()
 if os.environ.get('ONLY') == 'V19':                               # v131: V19 SLT Noir, black on black (mask from scripts/mask_black_v133.py)
-    cut('V19', 'V19.png', thr=128, ybot=1253, color=1.0, contrast=1.04, own=1.5, raw=True); sys.exit()
+    cut('V19', 'V19.png', thr=128, ybot=1253, color=1.0, contrast=1.04, own=1.5, raw=True, recolor=False); sys.exit()
 if os.environ.get('ONLY') == 'L20':                               # v126: L20 L'Immensite (cropped away from its tube box), symmetric
     cut('L20', 'L20.png', thr=100, color=1.04, contrast=1.08); sys.exit()
 if os.environ.get('ONLY') == 'T12':                               # v123: T12 Trussardi Uomo

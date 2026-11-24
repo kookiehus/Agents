@@ -2,7 +2,9 @@
 beside the cap is not filled with backdrop.
 v132: silhouette of a black bottle on pure black from per-row extents of its rim highlights (no morphological closing,
 so no backdrop is bridged in beside the cap or at the bottom corners). Rows from the cap top to the foot.
-Usage: mask_black_v132.py <photo> <foot row> <out.png>"""
+v134: optional cap clamp: rows above <cap bottom> keep only columns cap_x0..cap_x1 (the thin outer rim line and the
+dark gap beside it are dropped, no grey strips beside the cap).
+Usage: mask_black_v133.py <photo> <foot row> <out.png> [cap_x0 cap_x1 cap_bottom]"""
 import sys, numpy as np, cv2
 from PIL import Image
 from scipy import ndimage as nd
@@ -22,4 +24,7 @@ c0, c1 = cx.min() + 4, cx.max() - 4; top[c0:c1] = nd.minimum_filter1d(top, 41)[c
 top = nd.gaussian_filter1d(top, 1.5)
 colm = np.arange(h)[:, None] >= top[None, :] - 0.5
 m = np.where(colm, m, 0).astype(np.uint8)
+if len(sys.argv) > 4:
+    cx0, cx1, cyb = float(sys.argv[4]), float(sys.argv[5]), int(sys.argv[6])
+    xx = np.arange(w)[None, :]; m[:cyb] = np.where((xx >= cx0) & (xx <= cx1), m[:cyb], 0)
 o = im.convert('RGBA'); o.putalpha(Image.fromarray(m)); o.save(out); print(out, (m > 0).sum())
