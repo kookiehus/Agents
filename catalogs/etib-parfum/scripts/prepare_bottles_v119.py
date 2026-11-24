@@ -38,8 +38,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
-if os.environ.get('ONLY') == 'V19':                               # v131: V19 SLT Noir, black on black (mask from scripts/mask_black_v131.py)
-    cut('V19', 'V19.png', thr=128, ybot=1253, color=1.0, contrast=1.04); sys.exit()
+if os.environ.get('ONLY') == 'V19':                               # v131: V19 SLT Noir, black on black (mask from scripts/mask_black_v132.py)
+    cut('V19', 'V19.png', thr=128, ybot=1253, color=1.0, contrast=1.04, own=1.5); sys.exit()
 if os.environ.get('ONLY') == 'L20':                               # v126: L20 L'Immensite (cropped away from its tube box), symmetric
     cut('L20', 'L20.png', thr=100, color=1.04, contrast=1.08); sys.exit()
 if os.environ.get('ONLY') == 'T12':                               # v123: T12 Trussardi Uomo
