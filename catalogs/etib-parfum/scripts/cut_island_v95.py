@@ -1,6 +1,6 @@
 """v92/v94 (denoised, smoother glass, 2x): island cut-out with a clean straight-segment outline (no ragged see-through edges); glass shows the white page.
 Usage: cut_island_v92.py <photo> <out.png>"""
-import sys, numpy as np, cv2
+import sys, os, numpy as np, cv2
 from PIL import Image
 from scipy import ndimage as nd
 src, outp = sys.argv[1], sys.argv[2]
@@ -57,7 +57,7 @@ band = (dist_ >= -1) & (dist_ < 44) & (np.arange(w)[None, :] >= 88) & (np.arange
 Lg = I.astype(np.float32).mean(axis=2)
 line_ = np.clip(1 - np.abs(dist_ - 3.0)/4.0, 0, 1)                                    # v99: a clear LED line, ~5 px, just under the edge
 spill_ = 0.95*np.clip(1 - dist_/34, 0, 1)**1.2
-ga = np.maximum(line_, spill_)*band
+ga = np.maximum(line_, spill_)*band*(0.0 if os.environ.get('NO_LED', '1') == '1' else 1.0)   # v100: LED strip removed at the owner's request
 ga = np.clip(ga, 0, 1)
 ga = cv2.GaussianBlur(ga.astype(np.float32), (0, 0), 2.0)
 glow_a = np.where(alpha > 0.5, 0, ga)
