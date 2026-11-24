@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from scipy import ndimage as nd
 SRC, OUT = sys.argv[1:3]; os.makedirs(OUT, exist_ok=True); K = 4
 
-def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True):
+def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True, flat=()):
     rgb = np.array(Image.open(f'{SRC}/{src}').convert('RGB')).astype(np.float32)/255; h, w = rgb.shape[:2]
     A = np.array(Image.open(f'{SRC}/{name}_rb.png'))[..., 3] > thr
     lab, n = nd.label(A); c = np.bincount(lab.ravel()); c[0] = 0; A = nd.binary_fill_holes(lab == np.argmax(c))
@@ -21,6 +21,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     cx = np.median((lx + rx)/2); hw = (rx - lx)/2
     if axis: cx = axis; hw = rx - cx                               # C9: shadow on the left, use the right edge about the cap's axis
     hw = nd.gaussian_filter1d(nd.median_filter(hw, 9), 1.5) - 0.8
+    for f0, f1 in flat:                                              # v135: straight sides (constant half-width) on these rows
+        sel = (Y >= f0) & (Y <= f1); hw[sel] = np.median(hw[sel])
     L_, R_ = cx - hw, cx + hw
     if own:                                                          # v124: each side follows its own edge, pulled in by `own` px
         L_ = nd.gaussian_filter1d(nd.median_filter(lx, 9), 1.5) + own; R_ = nd.gaussian_filter1d(nd.median_filter(rx, 9), 1.5) - own
@@ -41,7 +43,7 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
 if os.environ.get('ONLY') == 'V26':                               # v134: V26 Aqua Kiss mist, symmetric
-    cut('V26', 'V26.jpg', thr=100, color=1.06, contrast=1.06); sys.exit()
+    cut('V26', 'V26.jpg', thr=100, color=1.06, contrast=1.06, flat=((193, 322), (331, 338), (352, 852))); sys.exit()
 if os.environ.get('ONLY') == 'V19':                               # v131: V19 SLT Noir, black on black (mask from scripts/mask_black_v133.py)
     cut('V19', 'V19.png', thr=128, ybot=1253, color=1.0, contrast=1.04, own=1.5, raw=True, recolor=False); sys.exit()
 if os.environ.get('ONLY') == 'L20':                               # v126: L20 L'Immensite (cropped away from its tube box), symmetric
