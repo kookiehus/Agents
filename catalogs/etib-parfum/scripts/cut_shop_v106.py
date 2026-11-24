@@ -1,4 +1,4 @@
-"""v101/v102: owner's new shop interior photo for page 18 (end of the men's section).
+"""v101/v102/v106: owner's new shop interior photo for page 18 (end of the men's section).
 The source has a baked-in grey/white checkerboard. It is found as neutral pixels where both checker tones
 (~234 and ~254) are present in a 15 px window, grown pixel by pixel up to the store outline, then the
 outline is smoothed. The floor (only the floor, between the plinth lines) blurs and fades into the page.
@@ -26,6 +26,16 @@ cs, _ = cv2.findContours(obj.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPR
 poly = cv2.approxPolyDP(max(cs, key=cv2.contourArea), 3.5, True)
 big = np.zeros((h*4, w*4), np.uint8); cv2.fillPoly(big, [(poly.astype(np.float32)*4 + 1.5).astype(np.int32)], 255)
 pm = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
+# v106: exact corners where the side cabinets meet the back wall (measured on the source):
+# display frame top line, the short end post, the wall edge and wall top
+def corner(x0, x1, y0, y1, inside):
+    ss = 8; yy, xx = np.mgrid[y0:y1:1/ss, x0:x1:1/ss] + 0.5/ss
+    m = inside(xx, yy).astype(np.float32)
+    return m.reshape(y1 - y0, ss, x1 - x0, ss).mean((1, 3))
+pm[300:400, 420:530] = corner(420, 530, 300, 400, lambda x, y:
+    ((x < 491) & (y >= 339 + (x - 436)*0.759 - 1)) | ((x >= 491) & (x < 511.5) & (y >= 383)) | ((x >= 511.5) & (y >= 348.5)))
+pm[300:400, 915:1020] = corner(915, 1020, 300, 400, lambda x, y:
+    ((x < 930.5) & (y >= 346)) | ((x >= 930.5) & (x < 950) & (y >= 384)) | ((x >= 950) & (y >= 381 - (x - 950)*0.685 - 1)))
 obj = pm > 0.5
 al = cv2.GaussianBlur(pm, (0, 0), 0.5)
 
