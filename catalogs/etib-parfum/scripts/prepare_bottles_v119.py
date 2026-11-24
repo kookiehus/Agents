@@ -45,6 +45,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'D8':                                # v141: D8 Devotion, rectangular, symmetric
+    cut('D8', 'D8.jpg', thr=100, axis=1084.5, flat=((200, 510), (560, 1270))); sys.exit()
 if os.environ.get('ONLY') == 'E10B':                              # v140: E10 Eclat, owner's front-view photo, symmetric
     cut('E10', 'E10b.jpg', thr=100, axis=599.5); sys.exit()
 if os.environ.get('ONLY') == 'H5':                                # v139: H5 The Scent for Her (cap overhang: follow the cut-out)
