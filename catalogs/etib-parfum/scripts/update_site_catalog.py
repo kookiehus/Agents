@@ -73,7 +73,7 @@ for d in base:
     if x is None:
         x = {'c': d['category'], 'n': d['number'], 'nm': d['name'].replace(' - unisex', ''), 't': d['type']}; tr.append(x); byt[k] = x
     x.update(top=top, heart=heart, base=bas, t=d['type'])
-    if k in NAMES: x['nm'] = NAMES[k]
+    x['nm'] = re.sub(r'\s*-\s*unisex$', '', d['name'], flags=re.I)   # v147: trainer names follow the catalogue
 tr.sort(key=lambda x: (order.index(x['c']) if x['c'] in order else 9, num(x['n'])))
 open(p, 'w', encoding='utf-8').write(t[:i] + json.dumps(tr, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('trainer:', len(tr))
