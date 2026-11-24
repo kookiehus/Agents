@@ -51,6 +51,15 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'FIX145':                            # v145: G15 / D23 follow the cut-out (no white in bow / cap gaps), G25 narrower side
+    S_ = os.environ['SRCS'].split(':')
+    globals()['SRC'] = S_[0]; cut('G15', 'G15.jpg', thr=100, mask=True)
+    globals()['SRC'] = S_[1]; cut('D23', 'D23.jpg', thr=100, mask=True); cut('G25', 'G25.jpg', thr=100, minsym=True)
+    sys.exit()
+if os.environ.get('ONLY') == 'NEW145':                            # v145: 12 owner's photos
+    for n_ in ('M7', 'C33', 'Z10', 'B5', 'B1', 'B9', 'L2', 'T11'): cut(n_, n_ + '.jpg', thr=100)
+    for n_ in ('Z1', 'G4', 'C2', 'N1'): cut(n_, n_ + '.jpg', thr=100, mask=True)
+    sys.exit()
 if os.environ.get('ONLY') == 'Y1':                                # v144: Y1 Mon Paris: narrower side + the black bow, richer colour
     cut('Y1', 'Y1.jpg', thr=100, minsym=True, dark=70, color=1.18, contrast=1.12); sys.exit()
 if os.environ.get('ONLY') == 'V142':                              # v142: J4 K3 V12 V17 Y1, symmetric front views
