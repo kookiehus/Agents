@@ -1,5 +1,5 @@
 """v115: owner's photos for T2/T15 Trussardi Donna, K23 Kenzo L'Eau par Kenzo pour Homme, L5 Lancome La Nuit Tresor,
-M11 Marc Jacobs Perfect, A2 Avril Lavigne Forbidden Rose.
+M11 Marc Jacobs Perfect, A2 Avril Lavigne Forbidden Rose; v116: K13 Kenzo L'Eau par Kenzo pour Femme.
 Four are studio shots on black with a mirror floor: the reflection is cut off along the bottle's real lower edge
 (measured on the photo). Mask = rembg cut-out made solid (clear glass shot on black keeps its own dark backdrop, which
 reads as glass on the dark panel), holes filled, lightly smoothed; edge colours from 2 px inside; light sharpening.
@@ -35,4 +35,6 @@ cut('T2', 'T2.png', lambda w: [(0, 0), (w, 0), (w, 1338), (0, 1338)])
 cut('K23', 'K23.png', lambda w: [(0, 0), (w, 0), (w, 1305), (0, 1305)])
 cut('L5', 'L5.png', lambda w: [(0, 0), (w, 0), (w, 1200), (590, 1200), (545, 1233), (500, 1200), (0, 1200)])
 cut('M11', 'M11.jpg', lambda w: [(0, 0), (w, 0), (w, 2000), (0, 2000)], thr=0.3)
+if os.environ.get('ONLY') == 'K13':
+    cut('K13', 'K13.png', lambda w: [(0, 0), (w, 0), (w, 1311.5), (760, 1310.5), (365, 1301.5), (0, 1301)]); sys.exit()
 cut('A2', 'A2.png', lambda w: [(0, 0), (w, 0), (w, 1323), (692, 1325), (548, 1352), (392, 1325), (0, 1323)])
