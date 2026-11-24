@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from scipy import ndimage as nd
 SRC, OUT = sys.argv[1:3]; os.makedirs(OUT, exist_ok=True); K = 4
 
-def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True, flat=(), mask=False):
+def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True, flat=(), mask=False, minsym=False, dark=0):
     rgb = np.array(Image.open(f'{SRC}/{src}').convert('RGB')).astype(np.float32)/255; h, w = rgb.shape[:2]
     A = np.array(Image.open(f'{SRC}/{name}_rb.png'))[..., 3] > thr
     lab, n = nd.label(A); c = np.bincount(lab.ravel()); c[0] = 0; A = nd.binary_fill_holes(lab == np.argmax(c))
@@ -19,6 +19,7 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     rx = np.array([np.where(A[y])[0].max() + 1 if A[y].any() else np.nan for y in Y], float)
     ok = ~np.isnan(lx); lx = np.interp(Y, Y[ok], lx[ok]); rx = np.interp(Y, Y[ok], rx[ok])
     cx = np.median((lx + rx)/2); hw = (rx - lx)/2
+    if minsym: hw = np.minimum(cx - lx, rx - cx)                   # v144: the narrower side (an asymmetric bow does not widen the glass)
     if axis: cx = axis; hw = rx - cx                               # C9: shadow on the left, use the right edge about the cap's axis
     hw = nd.gaussian_filter1d(nd.median_filter(hw, 9), 1.5) - 0.8
     for f0, f1 in flat:                                              # v135: straight sides (constant half-width) on these rows
@@ -33,6 +34,9 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     a = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
     if raw:                                                          # v133: keep the given mask's own top edge (black-on-black)
         a = np.minimum(a, cv2.GaussianBlur(A.astype(np.float32), (0, 0), 1.0))
+    if dark:                                                         # v144: dark trims (bow) on top of the glass silhouette
+        dm = A & (rgb.mean(2)*255 < dark); dm = nd.binary_opening(dm, iterations=1)
+        a = np.maximum(a, np.clip((cv2.GaussianBlur(dm.astype(np.float32), (0, 0), 1.2) - 0.5)*2.4 + 0.5, 0, 1))
     if mask:                                                         # v138: follow the cut-out itself (clips, wings, ears, bows: no filled gaps)
         mm = nd.binary_opening(A, iterations=2); mm[ybot + 1 if ybot else h:] = False
         a = cv2.GaussianBlur(mm.astype(np.float32), (0, 0), 1.6); a = np.clip((a - 0.5)*2.4 + 0.5, 0, 1)
@@ -47,6 +51,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'Y1':                                # v144: Y1 Mon Paris: narrower side + the black bow, richer colour
+    cut('Y1', 'Y1.jpg', thr=100, minsym=True, dark=70, color=1.18, contrast=1.12); sys.exit()
 if os.environ.get('ONLY') == 'V142':                              # v142: J4 K3 V12 V17 Y1, symmetric front views
     for n_ in ('J4', 'K3', 'V12', 'V17', 'Y1'): cut(n_, n_ + '.jpg', thr=100)
     sys.exit()
