@@ -38,6 +38,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'L20':                               # v126: L20 L'Immensite (cropped away from its tube box), symmetric
+    cut('L20', 'L20.png', thr=100, color=1.04, contrast=1.08); sys.exit()
 if os.environ.get('ONLY') == 'T12':                               # v123: T12 Trussardi Uomo
     cut('T12', 'T12.jpg', thr=60, own=3.0); sys.exit()   # v124: no light rim on the right
 if os.environ.get('ONLY') == 'L6':                                # v120: L6 Lacoste Pour Femme (bottle cropped away from its box)
