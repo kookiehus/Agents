@@ -67,11 +67,25 @@ Mw = cv2.warpAffine(m.astype(np.float32), M, (hw, hh), flags=cv2.INTER_LINEAR)
 # environment: warm light on the glass highlights, a touch of contrast to sit in the photo
 hi = np.clip((Bw.mean(axis=2, keepdims=True) - 0.35)/0.5, 0, 1)
 Bw = Bw*(1 - 0.5*hi) + Bw*np.array([1.06, 1.0, 0.90])*0.5*hi
+# v88: tone the render down to the photo: lifted blacks, softer highlights, less micro-contrast (the hands are a soft photo)
+Bl = cv2.GaussianBlur(Bw, (0, 0), 1.2); Bw = Bl + (Bw - Bl)*0.75
+lumB = Bw.mean(axis=2, keepdims=True); Bw = lumB + (Bw - lumB)*0.9
+Bw = 0.075 + Bw*0.80; Bw = Bw**1.06
+Bw = Bw*np.array([1.02, 1.0, 0.97])                                                    # same warm cast as the skin light
 # compositing
 occs = cv2.GaussianBlur(occ.astype(np.float32), (0, 0), 1.0)
 d_occ = nd.distance_transform_edt(~occ)
 shadow = np.clip(1 - d_occ/22, 0, 1)*0.45*(Mw > 0.5)                                  # contact shadow of fingers on the glass
 Bw = Bw*(1 - shadow[..., None])
+# cast shadow of the woman's fingertip on the cap and of the thumb on the glass (light from the upper left)
+cast = np.zeros((hh, hw), np.float32); sh_src = (nailm | skin).astype(np.float32)
+M_sh = np.float32([[1, 0, 16], [0, 1, 22]]); cast = cv2.warpAffine(sh_src, M_sh, (hw, hh))
+cast = cv2.GaussianBlur(cast, (0, 0), 9)*(1 - occ)*(Mw > 0.5)
+Bw = Bw*(1 - 0.55*cast[..., None])
+tipsh = cv2.warpAffine(nailm.astype(np.float32), np.float32([[1, 0, -6], [0, 1, 30]]), (hw, hh))        # the fingertip shades the cap right under it
+tipsh = cv2.GaussianBlur(tipsh, (0, 0), 14)*(1 - occ)*(Mw > 0.5)
+Bw = Bw*(1 - 0.75*np.clip(tipsh*1.4, 0, 1)[..., None])
+Aw = np.maximum(Aw, np.clip(tipsh*1.4, 0, 1)*0.6*(Mw > 0.5))                           # the clear glass under the shadow reads darker, not see-through
 oldd = nd.binary_dilation(old, iterations=3)
 res_rgb = rgb.copy(); res_a = al.copy()
 res_a = np.where(oldd & ~occ, 0.0, res_a)                                             # remove the old bottle
