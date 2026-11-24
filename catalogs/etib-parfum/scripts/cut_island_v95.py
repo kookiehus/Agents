@@ -5,7 +5,7 @@ from PIL import Image
 from scipy import ndimage as nd
 src, outp = sys.argv[1], sys.argv[2]
 I = np.array(Image.open(src).convert('RGB'))
-Id = cv2.fastNlMeansDenoisingColored(I, None, 4, 4, 7, 21)                        # v94: denoised colours (the outline is still found on the original)
+Id = cv2.fastNlMeansDenoisingColored(I, None, 2, 2, 7, 21)                        # v94: denoised colours (the outline is still found on the original)
 h, w = I.shape[:2]
 # 1) object mask: GrabCut on the composite
 mask = np.zeros((h, w), np.uint8); bgd = np.zeros((1, 65), np.float64); fgd = np.zeros((1, 65), np.float64)
@@ -30,7 +30,7 @@ bot = poly([(0, 500)] + BOTL + [(1535, 873), (1535, 1024), (0, 1024)])
 fgc = fg & ~bot
 objs = poly([(290, 150), (455, 150), (455, 270), (290, 270)]) | poly([(812, 170), (882, 170), (882, 352), (812, 352)]) | sign
 vimg = Image.new('L', (w, h), 0); dv = ImageDraw.Draw(vimg)                     # white vase = two stacked spheres measured on the photo
-dv.ellipse((1370 - 21, 268 - 19, 1370 + 21, 268 + 19), fill=255); dv.ellipse((1370 - 28, 300 - 17, 1370 + 28, 300 + 17), fill=255)
+dv.ellipse((1370 - 19, 268 - 17, 1370 + 19, 268 + 18), fill=255); dv.ellipse((1370 - 26, 300 - 15, 1370 + 26, 300 + 16), fill=255)
 vase = np.array(vimg) > 0
 glass = fgc & ~objs & ~vase
 glass &= ~poly([(975, 0), (1535, 0), (1535, 318), (1345, 316), (978, 276)])          # right box: nothing above its top rim (the grey wall behind the vase)
@@ -69,11 +69,21 @@ t = cv2.GaussianBlur(t, (0, 0), 1.0)[..., None]*(1 - solid[..., None])
 F = np.clip(If + (246 - B)*t*0.95, 0, 255)
 Fs = cv2.GaussianBlur(F, (0, 0), 1.6); w8 = np.clip((t - 0.35)/0.4, 0, 1)                 # see-through glass areas: smooth, no blocky grey
 F = F*(1 - w8) + Fs*w8
+# v97: flat bright panels from the original, lightly smoothed (no posterised 'map' blotches)
+Lo = I.astype(np.float32).mean(axis=2); tex = cv2.GaussianBlur(np.abs(Lo - cv2.GaussianBlur(Lo, (0, 0), 2)), (0, 0), 3)
+flatw = (np.clip((Lo - 165)/30, 0, 1)*np.clip((6 - tex)/4, 0, 1))[..., None]
+F = F*(1 - flatw) + cv2.GaussianBlur(I.astype(np.float32), (0, 0), 1.4)*flatw
+# v97: edge decontamination: the outer 3 px take the colour from 4 px inside (no grey / dark seam along the cut)
+inside = alpha > 0.5; dd = nd.distance_transform_edt(inside)
+core = dd > 4; ci = nd.distance_transform_edt(~core, return_distances=False, return_indices=True)
+edge = (dd <= 4)                                                                      # incl. everything outside: no backdrop colour left to bleed in when resizing
+F = np.where(edge[..., None], F[ci[0], ci[1]], F)
 gw = np.clip(glow_a*1.6, 0, 1)[..., None]
 F = F*(1 - gw) + np.array([255, 222, 178])*gw                                        # warm LED light on the white page
-alpha = np.maximum(alpha, glow_a*0.95)
-F = cv2.resize(F.astype(np.float32), (w*2, h*2), interpolation=cv2.INTER_CUBIC); alpha = cv2.resize(alpha, (w*2, h*2), interpolation=cv2.INTER_CUBIC)   # 2x for print
-bl = cv2.GaussianBlur(F, (0, 0), 1.2); F = np.clip(F + (F - bl)*0.6, 0, 255)
+alpha = np.maximum(alpha, glow_a*0.85)
+F = cv2.resize(F.astype(np.float32), (w*2, h*2), interpolation=cv2.INTER_CUBIC); alpha = np.clip(cv2.resize(alpha, (w*2, h*2), interpolation=cv2.INTER_LINEAR), 0, 1)   # 2x for print
+bl = cv2.GaussianBlur(F, (0, 0), 1.2); fw2 = cv2.resize(flatw[..., 0], (w*2, h*2))[..., None]
+F = np.clip(F + (F - bl)*0.6*(1 - fw2), 0, 255)                                      # sharpen detail only, not the flat panels
 out = np.dstack([F, alpha*255]).astype(np.uint8)
 ys, xs = np.where(alpha > 0.02); im = Image.fromarray(out, 'RGBA').crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 im.save(outp); print(im.size, len(ap), 'vertices')
