@@ -25,8 +25,8 @@ solid = cabinet | sign | (poly([(816, 286), (874, 286), (874, 348), (816, 348)])
 fg = nd.binary_fill_holes(nd.binary_closing(fg | cabinet | solid, iterations=4)) & ~excl
 # 2) v95 exact outline: bottom = the tumba's real lower edges (above the LED glow and the floor), traced on the photo;
 #    top = the upper convex hull of the glass boxes (straight far rims, no ragged background); objects on top added by box
-bot = poly([(0, 500), (88, 500), (566, 967), (880, 991), (1018, 974), (1020, 989), (1078, 989), (1080, 946), (1400, 861), (1402, 870),
-            (1453, 873), (1535, 873), (1535, 1024), (0, 1024)])
+BOTL = [(88, 500), (566, 967), (880, 991), (1018, 974), (1020, 989), (1078, 989), (1080, 946), (1400, 861), (1402, 870), (1453, 873)]
+bot = poly([(0, 500)] + BOTL + [(1535, 873), (1535, 1024), (0, 1024)])
 fgc = fg & ~bot
 objs = poly([(290, 150), (455, 150), (455, 270), (290, 270)]) | poly([(812, 170), (882, 170), (882, 352), (812, 352)]) | sign
 vimg = Image.new('L', (w, h), 0); dv = ImageDraw.Draw(vimg)                     # white vase = two stacked spheres measured on the photo
@@ -42,21 +42,36 @@ body = (hull > 0) & ~bot
 body &= ~poly([(1453, 0), (1535, 0), (1535, 1024), (1453, 1024)]) & ~poly([(0, 0), (84, 0), (84, 1024), (0, 1024)])
 full = body | (fgc & objs) | vase
 full = nd.binary_fill_holes(nd.binary_opening(full, iterations=1))
+ybl = np.interp(np.arange(w), [p_[0] for p_ in BOTL], [p_[1] for p_ in BOTL])         # v96: fill every column down to the tumba's exact lower edge
+for x in range(88, 1454):
+    col = np.nonzero(full[:, x])[0]
+    if len(col) and col[-1] > 400: full[col[0]:int(ybl[x]), x] = True
 cs, _ = cv2.findContours(full.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 c = max(cs, key=cv2.contourArea); ap = cv2.approxPolyDP(c, 1.2, True)
 K = 4; big = np.zeros((h*K, w*K), np.uint8); cv2.fillPoly(big, [ap*K + K//2], 255, lineType=cv2.LINE_AA)
 alpha = cv2.resize(big.astype(np.float32)/255, (w, h), interpolation=cv2.INTER_AREA)
 solid = solid | vase
+# v96: the LED light strip under the tumba is kept: a band under the lower edge, its alpha from the light itself, fading out
+yy_ = np.arange(h)[:, None]; dist_ = yy_ - ybl[None, :]
+band = (dist_ >= -1) & (dist_ < 44) & (np.arange(w)[None, :] >= 88) & (np.arange(w)[None, :] <= 1453)
+Lg = I.astype(np.float32).mean(axis=2)
+ga = (0.55*np.clip((Lg - 95)/110, 0, 1) + 0.45)*np.clip(1 - dist_/44, 0, 1)**1.6*band   # light strip + soft warm spill on the floor
+ga = cv2.GaussianBlur(ga.astype(np.float32), (0, 0), 2.0)
+glow_a = np.where(alpha > 0.5, 0, ga)
 # 3) the dark backdrop seen through the clear glass becomes white (the page), reflections and bottles stay
 k = 4; small = cv2.resize(I, (w//k, h//k), interpolation=cv2.INTER_AREA)
 ms = cv2.resize(nd.binary_dilation(fg | full, iterations=12).astype(np.uint8)*255, (w//k, h//k), interpolation=cv2.INTER_NEAREST)
 small = cv2.resize(Id, (w//k, h//k), interpolation=cv2.INTER_AREA); Bs = cv2.inpaint(small, ms, 9, cv2.INPAINT_TELEA); B = cv2.GaussianBlur(cv2.resize(Bs, (w, h), interpolation=cv2.INTER_CUBIC), (0, 0), 6).astype(float)
 If = Id.astype(float); diff = np.abs(If - B).max(axis=2)
 t = np.clip(1 - (diff - 10)/48, 0, 1)
+t = t*(I.astype(np.float32).mean(axis=2) < 175)                                     # v96: bright white panels are never 'see-through'
 t = cv2.GaussianBlur(t, (0, 0), 1.0)[..., None]*(1 - solid[..., None])
 F = np.clip(If + (246 - B)*t*0.95, 0, 255)
 Fs = cv2.GaussianBlur(F, (0, 0), 1.6); w8 = np.clip((t - 0.35)/0.4, 0, 1)                 # see-through glass areas: smooth, no blocky grey
 F = F*(1 - w8) + Fs*w8
+gw = np.clip(glow_a*1.6, 0, 1)[..., None]
+F = F*(1 - gw) + np.array([255, 222, 178])*gw                                        # warm LED light on the white page
+alpha = np.maximum(alpha, glow_a*0.95)
 F = cv2.resize(F.astype(np.float32), (w*2, h*2), interpolation=cv2.INTER_CUBIC); alpha = cv2.resize(alpha, (w*2, h*2), interpolation=cv2.INTER_CUBIC)   # 2x for print
 bl = cv2.GaussianBlur(F, (0, 0), 1.2); F = np.clip(F + (F - bl)*0.6, 0, 255)
 out = np.dstack([F, alpha*255]).astype(np.uint8)
