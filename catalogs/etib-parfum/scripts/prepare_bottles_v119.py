@@ -35,6 +35,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None):
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'T12':                               # v123: T12 Trussardi Uomo
+    cut('T12', 'T12.jpg', thr=60); sys.exit()
 if os.environ.get('ONLY') == 'L6':                                # v120: L6 Lacoste Pour Femme (bottle cropped away from its box)
     cut('L6', 'L6.png'); sys.exit()
 cut('A10', 'A10.png')
