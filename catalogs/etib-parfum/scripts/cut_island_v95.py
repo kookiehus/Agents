@@ -55,7 +55,8 @@ solid = solid | vase
 yy_ = np.arange(h)[:, None]; dist_ = yy_ - ybl[None, :]
 band = (dist_ >= -1) & (dist_ < 44) & (np.arange(w)[None, :] >= 88) & (np.arange(w)[None, :] <= 1453)
 Lg = I.astype(np.float32).mean(axis=2)
-ga = (0.55*np.clip((Lg - 95)/110, 0, 1) + 0.45)*np.clip(1 - dist_/44, 0, 1)**1.6*band   # light strip + soft warm spill on the floor
+ga = (np.exp(-np.clip(dist_, 0, None)/3.0)*0.95 + 0.55*np.clip(1 - dist_/44, 0, 1)**1.8)*band   # v98: even LED line along the whole edge + soft warm spill
+ga = np.clip(ga, 0, 1)
 ga = cv2.GaussianBlur(ga.astype(np.float32), (0, 0), 2.0)
 glow_a = np.where(alpha > 0.5, 0, ga)
 # 3) the dark backdrop seen through the clear glass becomes white (the page), reflections and bottles stay
@@ -79,8 +80,8 @@ core = dd > 4; ci = nd.distance_transform_edt(~core, return_distances=False, ret
 edge = (dd <= 4)                                                                      # incl. everything outside: no backdrop colour left to bleed in when resizing
 F = np.where(edge[..., None], F[ci[0], ci[1]], F)
 gw = np.clip(glow_a*1.6, 0, 1)[..., None]
-F = F*(1 - gw) + np.array([255, 222, 178])*gw                                        # warm LED light on the white page
-alpha = np.maximum(alpha, glow_a*0.85)
+F = F*(1 - gw) + np.array([255, 226, 182])*gw                                        # warm LED light on the white page
+alpha = np.maximum(alpha, glow_a*0.88)
 F = cv2.resize(F.astype(np.float32), (w*2, h*2), interpolation=cv2.INTER_CUBIC); alpha = np.clip(cv2.resize(alpha, (w*2, h*2), interpolation=cv2.INTER_LINEAR), 0, 1)   # 2x for print
 bl = cv2.GaussianBlur(F, (0, 0), 1.2); fw2 = cv2.resize(flatw[..., 0], (w*2, h*2))[..., None]
 F = np.clip(F + (F - bl)*0.6*(1 - fw2), 0, 255)                                      # sharpen detail only, not the flat panels
