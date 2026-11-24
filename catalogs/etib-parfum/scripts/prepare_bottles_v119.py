@@ -42,6 +42,12 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'V137':                              # v137: owner's photos C24 C25 C4 (Chanel Chance: mirrored about the
+    cut('C24', 'C24.jpg', axis=1084.0)                             #   bottle axis, the cap's cast shadow on the left is dropped),
+    cut('C25', 'C25.jpg', axis=1078.0)                             #   C5 CK All, G2 L'Interdit, G11 Bamboo (symmetric),
+    cut('C4', 'C4.jpg', axis=799.0)                                #   E10 Eclat, G15 Flora (asymmetric clip / bow: own edges)
+    cut('C5', 'C5.jpg'); cut('G2', 'G2.jpg'); cut('G11', 'G11.jpg')
+    cut('E10', 'E10.jpg', own=1.0); cut('G15', 'G15.jpg', own=1.0); sys.exit()
 if os.environ.get('ONLY') == 'V26':                               # v134: V26 Aqua Kiss mist, symmetric
     cut('V26', 'V26.jpg', thr=100, color=1.06, contrast=1.06, flat=((193, 322), (331, 338), (352, 852))); sys.exit()
 if os.environ.get('ONLY') == 'V19':                               # v131: V19 SLT Noir, black on black (mask from scripts/mask_black_v133.py)
