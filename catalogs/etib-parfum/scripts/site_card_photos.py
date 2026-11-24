@@ -4,9 +4,9 @@ Usage: python3 site_card_photos.py <copy of assets/data> <assets/fonts> <out dir
 import sys, os, json
 here = os.path.dirname(os.path.abspath(__file__))
 D_ARG, FONTS_ARG, OUTDIR = sys.argv[1:4]
-src = open(os.path.join(here, 'build_editorial_v141.py'), encoding='utf-8').read()
+src = open(os.path.join(here, 'build_editorial_v142.py'), encoding='utf-8').read()
 src = src[:src.index("tmp = f'{D}/ed_cards.pdf'")]
-sys.argv = [os.path.join(here, 'build_editorial_v141.py'), D_ARG, FONTS_ARG, 'none', '/dev/null']
+sys.argv = [os.path.join(here, 'build_editorial_v142.py'), D_ARG, FONTS_ARG, 'none', '/dev/null']
 __file__ = sys.argv[0]
 exec(compile(src, sys.argv[0], 'exec'))
 from reportlab.pdfgen import canvas as _cv
