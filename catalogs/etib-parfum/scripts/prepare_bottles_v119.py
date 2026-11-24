@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from scipy import ndimage as nd
 SRC, OUT = sys.argv[1:3]; os.makedirs(OUT, exist_ok=True); K = 4
 
-def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None):
+def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0):
     rgb = np.array(Image.open(f'{SRC}/{src}').convert('RGB')).astype(np.float32)/255; h, w = rgb.shape[:2]
     A = np.array(Image.open(f'{SRC}/{name}_rb.png'))[..., 3] > thr
     lab, n = nd.label(A); c = np.bincount(lab.ravel()); c[0] = 0; A = nd.binary_fill_holes(lab == np.argmax(c))
@@ -21,7 +21,10 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None):
     cx = np.median((lx + rx)/2); hw = (rx - lx)/2
     if axis: cx = axis; hw = rx - cx                               # C9: shadow on the left, use the right edge about the cap's axis
     hw = nd.gaussian_filter1d(nd.median_filter(hw, 9), 1.5) - 0.8
-    poly = np.r_[np.c_[cx - hw, Y], np.c_[cx + hw, Y][::-1]]
+    L_, R_ = cx - hw, cx + hw
+    if own:                                                          # v124: each side follows its own edge, pulled in by `own` px
+        L_ = nd.gaussian_filter1d(nd.median_filter(lx, 9), 1.5) + own; R_ = nd.gaussian_filter1d(nd.median_filter(rx, 9), 1.5) - own
+    poly = np.r_[np.c_[L_, Y], np.c_[R_, Y][::-1]]
     big = np.zeros((h*K, w*K), np.uint8); cv2.fillPoly(big, [np.round(poly*K).astype(np.int32)], 255)
     a = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
     e = max(5, int(round(h/350))*2 + 1)
@@ -36,7 +39,7 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None):
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
 if os.environ.get('ONLY') == 'T12':                               # v123: T12 Trussardi Uomo
-    cut('T12', 'T12.jpg', thr=60); sys.exit()
+    cut('T12', 'T12.jpg', thr=60, own=3.0); sys.exit()   # v124: no light rim on the right
 if os.environ.get('ONLY') == 'L6':                                # v120: L6 Lacoste Pour Femme (bottle cropped away from its box)
     cut('L6', 'L6.png'); sys.exit()
 cut('A10', 'A10.png')

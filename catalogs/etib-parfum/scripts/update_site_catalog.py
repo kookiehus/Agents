@@ -19,7 +19,9 @@ def title(n):
     w = [x if x in {'D&G', 'CH', 'VIP', 'ETIB', 'XS', 'MFK'} else (x.lower() if i and x in small else x.capitalize()) for i, x in enumerate(n.split())]
     return ' '.join(w).replace("'S ", "'s ")
 NAMES = {('T2', 'ЖЕНСКИЕ'): 'Donna Trussardi 1994', ('T15', 'ЖЕНСКИЕ'): 'Trussardi Donna 2011', ('C3', 'ЖЕНСКИЕ'): 'Carolina Herrera La Bomba',
-         ('J7', 'МУЖСКИЕ'): 'Jean Paul Gaultier Le Male Elixir', ('D18', 'МУЖСКИЕ'): 'Alfred Dunhill Desire Blue', ('H2', 'УНИСЕКС'): 'Hormone Paris GABA'}
+         ('J7', 'МУЖСКИЕ'): 'Jean Paul Gaultier Le Male Elixir', ('D18', 'МУЖСКИЕ'): 'Alfred Dunhill Desire Blue', ('H2', 'УНИСЕКС'): 'Hormone Paris GABA',
+         ('C15', 'ПРЕМИУМ'): 'Creed Aventus', ('H1', 'ПРЕМИУМ'): "Haute Fragrance Company Devil's Intrigue 2018",
+         ('K5', 'ПРЕМИУМ'): 'Kilian Good Girl Gone Bad', ('L3', 'ПРЕМИУМ'): 'Louis Vuitton Imagination'}   # v124: no (men)/(women)
 
 # ---- catalog.html
 p = f'{SITE}/catalog.html'; s = open(p, encoding='utf-8').read()
