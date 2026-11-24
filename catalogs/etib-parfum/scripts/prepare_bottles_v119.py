@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter, ImageEnhance
 from scipy import ndimage as nd
 SRC, OUT = sys.argv[1:3]; os.makedirs(OUT, exist_ok=True); K = 4
 
-def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True, flat=()):
+def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=0.0, raw=False, recolor=True, flat=(), mask=False):
     rgb = np.array(Image.open(f'{SRC}/{src}').convert('RGB')).astype(np.float32)/255; h, w = rgb.shape[:2]
     A = np.array(Image.open(f'{SRC}/{name}_rb.png'))[..., 3] > thr
     lab, n = nd.label(A); c = np.bincount(lab.ravel()); c[0] = 0; A = nd.binary_fill_holes(lab == np.argmax(c))
@@ -31,6 +31,9 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     a = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
     if raw:                                                          # v133: keep the given mask's own top edge (black-on-black)
         a = np.minimum(a, cv2.GaussianBlur(A.astype(np.float32), (0, 0), 1.0))
+    if mask:                                                         # v138: follow the cut-out itself (clips, wings, ears, bows: no filled gaps)
+        mm = nd.binary_opening(A, iterations=2); mm[ybot + 1 if ybot else h:] = False
+        a = cv2.GaussianBlur(mm.astype(np.float32), (0, 0), 1.6); a = np.clip((a - 0.5)*2.4 + 0.5, 0, 1)
     e = max(5, int(round(h/350))*2 + 1) if recolor else 1   # v134: black-on-black keeps its own bright rim
     inner = cv2.erode((a > 0.99).astype(np.uint8), np.ones((e, e), np.uint8)).astype(bool)
     gi = nd.distance_transform_edt(~inner, return_distances=False, return_indices=True)
@@ -42,6 +45,13 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'H5':                                # v139: H5 The Scent for Her (cap overhang: follow the cut-out)
+    cut('H5', 'H5.jpg', thr=100, mask=True); sys.exit()
+if os.environ.get('ONLY') == 'V138':                              # v138: E10 redone with the cut-out outline; 15 owner's photos
+    for n_ in ('E10',): cut(n_, n_ + '.jpg', thr=60, mask=True)
+    for n_ in ('P7', 'P5', 'M25', 'M26', 'M12'): cut(n_, n_ + '.jpg', thr=100, mask=True)
+    for n_ in ('V1', 'H7', 'G18', 'D24', 'D23', 'A1', 'J6', 'G25'): cut(n_, n_ + '.jpg', thr=100)
+    cut('J1', 'J1.jpg', thr=100, axis=873.0, ybot=1550); cut('C6', 'C6.jpg', thr=100, axis=821.5, ybot=1533); sys.exit()
 if os.environ.get('ONLY') == 'V137':                              # v137: owner's photos C24 C25 C4 (Chanel Chance: mirrored about the
     cut('C24', 'C24.jpg', axis=1084.0)                             #   bottle axis, the cap's cast shadow on the left is dropped),
     cut('C25', 'C25.jpg', axis=1078.0)                             #   C5 CK All, G2 L'Interdit, G11 Bamboo (symmetric),
