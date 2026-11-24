@@ -26,6 +26,8 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     L_, R_ = cx - hw, cx + hw
     if own:                                                          # v124: each side follows its own edge, pulled in by `own` px
         L_ = nd.gaussian_filter1d(nd.median_filter(lx, 9), 1.5) + own; R_ = nd.gaussian_filter1d(nd.median_filter(rx, 9), 1.5) - own
+        for f0, f1 in flat:                                          # v142: straight own edges on these rows
+            sel = (Y >= f0) & (Y <= f1); L_[sel] = np.median(L_[sel]); R_[sel] = np.median(R_[sel])
     poly = np.r_[np.c_[L_, Y], np.c_[R_, Y][::-1]]
     big = np.zeros((h*K, w*K), np.uint8); cv2.fillPoly(big, [np.round(poly*K).astype(np.int32)], 255)
     a = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32)/255
@@ -45,8 +47,11 @@ def cut(name, src, thr=20, ybot=None, color=1.06, contrast=1.06, axis=None, own=
     c3 = ImageEnhance.Contrast(c3).enhance(contrast).filter(ImageFilter.UnsharpMask(1.2, 40, 2))
     Image.merge('RGBA', (*c3.split(), img.getchannel('A'))).save(f'{OUT}/{name}.png'); print(name, img.size)
 
+if os.environ.get('ONLY') == 'V142':                              # v142: J4 K3 V12 V17 Y1, symmetric front views
+    for n_ in ('J4', 'K3', 'V12', 'V17', 'Y1'): cut(n_, n_ + '.jpg', thr=100)
+    sys.exit()
 if os.environ.get('ONLY') == 'D8':                                # v141: D8 Devotion, rectangular, symmetric
-    cut('D8', 'D8.jpg', thr=100, axis=1084.5, flat=((200, 510), (560, 1270))); sys.exit()
+    cut('D8', 'D8.jpg', thr=100, own=2.5, flat=((200, 510), (560, 1270))); sys.exit()   # v142: own edges (cap and body have different axes); sys.exit()
 if os.environ.get('ONLY') == 'E10B':                              # v140: E10 Eclat, owner's front-view photo, symmetric
     cut('E10', 'E10b.jpg', thr=100, axis=599.5); sys.exit()
 if os.environ.get('ONLY') == 'H5':                                # v139: H5 The Scent for Her (cap overhang: follow the cut-out)
