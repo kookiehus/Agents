@@ -6,6 +6,7 @@ Usage: python3 site_cards_v148.py <site dir> <picks.json> <pins dir> <pdf images
 import sys, os, json, re, math, shutil
 from PIL import Image
 SITE, PICKS, PINS, PDFI, CUT, CHO = sys.argv[1:7]
+ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))   # crop closer: the note fills the frame
 s = open(f'{SITE}/catalog.html', encoding='utf-8').read()
 base = json.loads(s[s.index('/*DATA_START*/') + 14:s.index('/*DATA_END*/')])
 t = open(f'{SITE}/tips.js', encoding='utf-8').read(); tips = json.loads(t[t.index('window.TIPS=') + 12:].rstrip().rstrip(';'))
@@ -132,10 +133,10 @@ NEW = ['ЖЕНСКИЕ|C3', 'ЖЕНСКИЕ|J6', 'МУЖСКИЕ|D18', 'МУЖС
 COL = {'Свежий': ['green', 'yellow', 'mauve'], 'Сладкий': ['pink', 'brown', 'mauve'], 'Свежий/Сладкий': ['yellow', 'pink', 'green']}
 
 os.makedirs(f'{SITE}/img/notes', exist_ok=True); os.makedirs(f'{SITE}/img/bottles', exist_ok=True)
-def put_note(src, name):
+def put_note(src, name, zoom=1.0):
     out = f'{SITE}/img/notes/{name}.webp'
     if not os.path.exists(out):
-        im = Image.open(src).convert('RGB'); W, H = 300, 480; k = max(W / im.width, H / im.height)
+        im = Image.open(src).convert('RGB'); W, H = 300, 480; k = max(W / im.width, H / im.height) * zoom
         im = im.resize((math.ceil(im.width * k), math.ceil(im.height * k)), Image.LANCZOS)
         x, y = (im.width - W) // 2, (im.height - H) // 2; im.crop((x, y, x + W, y + H)).save(out, 'WEBP', quality=74, method=6)
     return f'img/notes/{name}.webp'
@@ -154,7 +155,7 @@ for i, d in enumerate(base):
             files = choices.get(th) or []
             if not files: continue
             n = rot.get(th, 0); rot[th] = n + 1; f = files[n % len(files)]
-            ph.append(put_note(f'{PINS}/{f}', os.path.splitext(f)[0].replace('/', '_')))
+            ph.append(put_note(f'{PINS}/{f}', os.path.splitext(f)[0].replace('/', '_'), ZOOM))
         c = dict(dir=direction(d), brand=brand(nm(d)), sex=SEX.get(d['category']) or SEX_P.get(d['number'], 'унисекс'), season=season(d), occ=occasion(d),
                  style=style(tip), pyr=d.get('pyr') or [], sound=sound(d), mkt=marketing(tip), col=COL[d['type']][i % 3], ok=False, ph=ph)
     f = cut.get((d['category'][:3], d['number']))
