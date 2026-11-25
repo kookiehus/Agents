@@ -1,0 +1,2126 @@
+{
+"ЖЕНСКИЕ|A2": {
+"files": [
+"pins3/peach_6.jpg",
+"pins3/lotus_2.jpg",
+"pins3/sandalwood_8.jpg"
+],
+"notes": [
+"персик",
+"лотос",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|A5": {
+"files": [
+"pins3/ginger_8.jpg",
+"pins3/lily_3.jpg",
+"pins3/pink_pepper_8.jpg"
+],
+"notes": [
+"имбирь",
+"лилия",
+"розовый перец"
+]
+},
+"ЖЕНСКИЕ|A7": {
+"files": [
+"pins3/pitaya_0.jpg",
+"pins3/coconut_9.jpg",
+"pins3/praline_3.jpg"
+],
+"notes": [
+"питахайя",
+"кокосовая вода",
+"пралине"
+]
+},
+"ЖЕНСКИЕ|A10": {
+"files": [
+"pins3/berries_0.jpg",
+"pins3/grapefruit_7.jpg",
+"pins3/jasmine_7.jpg"
+],
+"notes": [
+"клюква",
+"грейпфрут",
+"жасмин самбак"
+]
+},
+"ЖЕНСКИЕ|A20": {
+"files": [
+"pins3/pear_5.jpg",
+"pins3/peony_2.jpg",
+"pins3/lily_valley_6.jpg"
+],
+"notes": [
+"груша",
+"пион",
+"ландыш"
+]
+},
+"ЖЕНСКИЕ|B3": {
+"files": [
+"pins3/lychee_3.jpg",
+"pins3/caramel_0.jpg",
+"pins3/iris_5.jpg"
+],
+"notes": [
+"красный личи",
+"пирожное",
+"корень ириса"
+]
+},
+"ЖЕНСКИЕ|B10": {
+"files": [
+"pins3/pink_pepper_3.jpg",
+"pins3/violet_6.jpg",
+"pins3/sandalwood_0.jpg"
+],
+"notes": [
+"розовый перец",
+"фиалка",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|B18": {
+"files": [
+"pins3/passionfruit_4.jpg",
+"pins3/grapefruit_6.jpg",
+"pins3/orchid_8.jpg"
+],
+"notes": [
+"маракуйя",
+"грейпфрут",
+"ванильная орхидея"
+]
+},
+"ЖЕНСКИЕ|B25": {
+"files": [
+"pins3/mandarin_4.jpg",
+"pins3/iris_4.jpg",
+"pins3/sandalwood_8.jpg"
+],
+"notes": [
+"мандарин",
+"корень ириса",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|C1": {
+"files": [
+"pins2/neroli3_0.jpg",
+"pins3/bergamot_5.jpg",
+"pins3/jasmine_1.jpg"
+],
+"notes": [
+"апельсиновый цвет",
+"бергамот",
+"жасмин"
+]
+},
+"ЖЕНСКИЕ|C3": {
+"files": [
+"pins3/pineapple_3.jpg",
+"pins3/rose_0.jpg",
+"pins3/vanilla_6.jpg"
+],
+"notes": [
+"ананас",
+"розифолия",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|C4": {
+"files": [
+"pins3/pink_pepper_0.jpg",
+"pins3/jasmine_7.jpg",
+"pins3/vanilla_2.jpg"
+],
+"notes": [
+"розовый перец",
+"жасмин",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|C5": {
+"files": [
+"pins3/grapefruit_9.jpg",
+"pins3/jasmine_3.jpg",
+"pins3/amber_5.jpg"
+],
+"notes": [
+"цветы грейпфрута",
+"жасмин",
+"амбра"
+]
+},
+"ЖЕНСКИЕ|C7": {
+"files": [
+"pins3/coffee_4.jpg",
+"pins3/lemon_4.jpg",
+"pins3/rose_4.jpg"
+],
+"notes": [
+"кофе",
+"лимон",
+"болгарская роза"
+]
+},
+"ЖЕНСКИЕ|C17": {
+"files": [
+"pins3/orange_3.jpg",
+"pins3/rose_2.jpg",
+"pins3/vanilla_6.jpg"
+],
+"notes": [
+"апельсин",
+"турецкая роза",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|C24": {
+"files": [
+"pins3/grapefruit_2.jpg",
+"pins3/hyacinth_0.jpg",
+"pins3/cedar_3.jpg"
+],
+"notes": [
+"грейпфрут",
+"гиацинт",
+"виргинский кедр"
+]
+},
+"ЖЕНСКИЕ|C25": {
+"files": [
+"pins3/lemon_6.jpg",
+"pins3/pink_pepper_8.jpg",
+"pins3/vetiver_0.jpg"
+],
+"notes": [
+"лимон",
+"розовый перец",
+"ветивер"
+]
+},
+"ЖЕНСКИЕ|C27": {
+"files": [
+"pins3/grapefruit_7.jpg",
+"pins3/coconut_4.jpg",
+"pins3/vanilla_7.jpg"
+],
+"notes": [
+"розовый грейпфрут",
+"кокос",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|D1": {
+"files": [
+"pins3/pear_4.jpg",
+"pins3/peach_6.jpg",
+"pins3/lily_valley_2.jpg"
+],
+"notes": [
+"груша",
+"персик",
+"ландыш"
+]
+},
+"ЖЕНСКИЕ|D3": {
+"files": [
+"pins3/orange_7.jpg",
+"pins3/pomegranate_1.jpg",
+"pins3/pineapple_9.jpg"
+],
+"notes": [
+"апельсин",
+"гранат",
+"ананас"
+]
+},
+"ЖЕНСКИЕ|D5": {
+"files": [
+"pins3/lemon_9.jpg",
+"pins3/rose_0.jpg",
+"pins3/amber_2.jpg"
+],
+"notes": [
+"сицилийский лимон",
+"белая роза",
+"амбра"
+]
+},
+"ЖЕНСКИЕ|D8": {
+"files": [
+"pins3/lemon_4.jpg",
+"pins3/caramel_7.jpg",
+"pins3/vanilla_3.jpg"
+],
+"notes": [
+"засахаренный лимон",
+"панна-котта",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|D9": {
+"files": [
+"pins3/bergamot_6.jpg",
+"pins3/peony_9.jpg",
+"pins3/musk_7.jpg"
+],
+"notes": [
+"бергамот",
+"пион",
+"белый мускус"
+]
+},
+"ЖЕНСКИЕ|D19": {
+"files": [
+"pins3/grapefruit_6.jpg",
+"pins3/violet_0.jpg",
+"pins3/sandalwood_0.jpg"
+],
+"notes": [
+"грейпфрут",
+"фиалка",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|E2": {
+"files": [
+"pins3/freesia_4.jpg",
+"pins3/plum_1.jpg",
+"pins3/vanilla_2.jpg"
+],
+"notes": [
+"белая фрезия",
+"слива",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|E5": {
+"files": [
+"pins3/apple_8.jpg",
+"pins3/flowers_4.jpg",
+"pins3/raspberry_3.jpg"
+],
+"notes": [
+"красное яблоко",
+"душистый горошек",
+"малина"
+]
+},
+"ЖЕНСКИЕ|E6": {
+"files": [
+"pins3/raspberry_2.jpg",
+"pins3/rose_2.jpg",
+"pins3/vanilla_4.jpg"
+],
+"notes": [
+"малина",
+"роза",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|E9": {
+"files": [
+"pins3/strawberry_4.jpg",
+"pins3/violet_6.jpg",
+"pins3/lily_9.jpg"
+],
+"notes": [
+"клубника",
+"фиалка",
+"лилия"
+]
+},
+"ЖЕНСКИЕ|E10": {
+"files": [
+"pins3/lilac_4.jpg",
+"pins3/peach_2.jpg",
+"pins3/cedar_0.jpg"
+],
+"notes": [
+"зелёная сирень",
+"цветок персика",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|E20": {
+"files": [
+"pins3/berries_9.jpg",
+"pins3/raspberry_3.jpg",
+"pins3/vanilla_9.jpg"
+],
+"notes": [
+"крыжовник",
+"малиновый джем",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|E22": {
+"files": [
+"pins3/berries_3.jpg",
+"pins3/flowers_4.jpg",
+"pins3/sandalwood_8.jpg"
+],
+"notes": [
+"гренадин",
+"георгин",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|E25": {
+"files": [
+"pins3/apple_0.jpg",
+"pins3/cream_0.jpg",
+"pins3/vanilla_4.jpg"
+],
+"notes": [
+"засахаренное яблоко",
+"взбитые сливки",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|G2": {
+"files": [
+"pins3/pear_8.jpg",
+"pins3/bergamot_5.jpg",
+"pins3/tuberose_3.jpg"
+],
+"notes": [
+"груша",
+"бергамот",
+"тубероза"
+]
+},
+"ЖЕНСКИЕ|G4": {
+"files": [
+"pins3/mint_3.jpg",
+"pins3/jasmine_3.jpg",
+"pins3/caramel_6.jpg"
+],
+"notes": [
+"мята",
+"водяной жасмин",
+"тростниковый сахар"
+]
+},
+"ЖЕНСКИЕ|G10": {
+"files": [
+"pins3/blackcurrant_4.jpg",
+"pins3/freesia_0.jpg",
+"pins3/patchouli_9.jpg"
+],
+"notes": [
+"лист чёрной смородины",
+"фрезия",
+"пачули"
+]
+},
+"ЖЕНСКИЕ|G11": {
+"files": [
+"pins3/bergamot_6.jpg",
+"pins3/neroli_8.jpg",
+"pins3/amber_2.jpg"
+],
+"notes": [
+"бергамот",
+"апельсиновый цвет",
+"амбра"
+]
+},
+"ЖЕНСКИЕ|G12": {
+"files": [
+"pins3/lily_valley_6.jpg",
+"pins3/narcissus_3.jpg",
+"pins3/blackcurrant_8.jpg"
+],
+"notes": [
+"ландыш",
+"нарцисс",
+"чёрная смородина"
+]
+},
+"ЖЕНСКИЕ|G15": {
+"files": [
+"pins3/peony_3.jpg",
+"pins3/orange_7.jpg",
+"pins2/osmanthus2_2.jpg"
+],
+"notes": [
+"пион",
+"цитрусы",
+"османтус"
+]
+},
+"ЖЕНСКИЕ|G22": {
+"files": [
+"pins3/blackcurrant_8.jpg",
+"pins3/pineapple_3.jpg",
+"pins3/vanilla_7.jpg"
+],
+"notes": [
+"чёрная смородина",
+"ананас",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|G25": {
+"files": [
+"pins2/neroli3_0.jpg",
+"pins3/tuberose_5.jpg",
+"pins3/cedar_7.jpg"
+],
+"notes": [
+"цветок апельсина",
+"тубероза",
+"виргинский кедр"
+]
+},
+"ЖЕНСКИЕ|H4": {
+"files": [
+"pins3/mango_1.jpg",
+"pins3/hyacinth_3.jpg",
+"pins3/lily_9.jpg"
+],
+"notes": [
+"папайя",
+"водяной гиацинт",
+"лилия"
+]
+},
+"ЖЕНСКИЕ|H5": {
+"files": [
+"pins3/peach_6.jpg",
+"pins3/osmanthus_0.jpg",
+"pins3/chocolate_5.jpg"
+],
+"notes": [
+"персик",
+"османтус",
+"какао"
+]
+},
+"ЖЕНСКИЕ|H14": {
+"files": [
+"pins3/peach_7.jpg",
+"pins3/oakmoss_3.jpg",
+"pins3/hyacinth_3.jpg"
+],
+"notes": [
+"персик",
+"дубовый мох",
+"водяной гиацинт"
+]
+},
+"ЖЕНСКИЕ|J4": {
+"files": [
+"pins3/blackberry_0.jpg",
+"pins3/grapefruit_7.jpg",
+"pins3/cedar_4.jpg"
+],
+"notes": [
+"ежевика",
+"грейпфрут",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|J5": {
+"files": [
+"pins3/orange_9.jpg",
+"pins3/honey_0.jpg",
+"pins3/patchouli_3.jpg"
+],
+"notes": [
+"красный апельсин",
+"мёд",
+"пачули"
+]
+},
+"ЖЕНСКИЕ|J6": {
+"files": [
+"pins3/cotton_candy_2.jpg",
+"pins3/caramel_9.jpg",
+"pins3/praline_7.jpg"
+],
+"notes": [
+"сахарная вата",
+"маршмеллоу",
+"засахаренный миндаль"
+]
+},
+"ЖЕНСКИЕ|K2": {
+"files": [
+"pins3/lemon_9.jpg",
+"pins3/caramel_0.jpg",
+"pins3/cream_5.jpg"
+],
+"notes": [
+"итальянский лимон",
+"маршмеллоу",
+"взбитые сливки"
+]
+},
+"ЖЕНСКИЕ|K3": {
+"files": [
+"pins3/blackcurrant_9.jpg",
+"pins3/rose_4.jpg",
+"pins3/jasmine_7.jpg"
+],
+"notes": [
+"чёрная смородина",
+"майская роза",
+"жасмин самбак"
+]
+},
+"ЖЕНСКИЕ|K13": {
+"files": [
+"pins3/mint_1.jpg",
+"pins3/pink_pepper_3.jpg",
+"pins3/violet_0.jpg"
+],
+"notes": [
+"мята",
+"розовый перец",
+"фиалка"
+]
+},
+"ЖЕНСКИЕ|L1": {
+"files": [
+"pins3/rhubarb_7.jpg",
+"pins3/jasmine_1.jpg",
+"pins3/lemon_4.jpg"
+],
+"notes": [
+"ревень",
+"жасмин",
+"лимонное дерево"
+]
+},
+"ЖЕНСКИЕ|L5": {
+"files": [
+"pins3/bergamot_0.jpg",
+"pins3/rose_0.jpg",
+"pins3/coconut_4.jpg"
+],
+"notes": [
+"бергамот",
+"роза",
+"кокос"
+]
+},
+"ЖЕНСКИЕ|L6": {
+"files": [
+"pins3/apple_2.jpg",
+"pins3/violet_6.jpg",
+"pins3/sandalwood_7.jpg"
+],
+"notes": [
+"яблоко",
+"фиалка",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|L8": {
+"files": [
+"pins3/pear_5.jpg",
+"pins3/iris_7.jpg",
+"pins3/praline_3.jpg"
+],
+"notes": [
+"груша",
+"ирис",
+"пралине"
+]
+},
+"ЖЕНСКИЕ|L9": {
+"files": [
+"pins3/pink_pepper_8.jpg",
+"pins3/rose_2.jpg",
+"pins3/cedar_3.jpg"
+],
+"notes": [
+"розовый перец",
+"роза",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|L19": {
+"files": [
+"pins3/apple_8.jpg",
+"pins3/jasmine_7.jpg",
+"pins3/orchid_0.jpg"
+],
+"notes": [
+"красное яблоко",
+"жасмин",
+"ванильная орхидея"
+]
+},
+"ЖЕНСКИЕ|M5": {
+"files": [
+"pins3/rose_4.jpg",
+"pins3/jasmine_1.jpg",
+"pins2/musk_9.jpg"
+],
+"notes": [
+"роза",
+"жасмин",
+"мускус"
+]
+},
+"ЖЕНСКИЕ|M11": {
+"files": [
+"pins3/rhubarb_7.jpg",
+"pins3/praline_5.jpg",
+"pins3/woods_2.jpg"
+],
+"notes": [
+"ревень",
+"миндальное молоко",
+"кашмеран"
+]
+},
+"ЖЕНСКИЕ|M12": {
+"files": [
+"pins3/mandarin_4.jpg",
+"pins3/peony_6.jpg",
+"pins3/amber_9.jpg"
+],
+"notes": [
+"мандарин",
+"пион",
+"амбровое дерево"
+]
+},
+"ЖЕНСКИЕ|M20": {
+"files": [
+"pins3/chocolate_9.jpg",
+"pins3/orange_7.jpg",
+"pins3/coffee_3.jpg"
+],
+"notes": [
+"какао",
+"горький апельсин",
+"кофе"
+]
+},
+"ЖЕНСКИЕ|M25": {
+"files": [
+"pins3/orange_3.jpg",
+"pins3/peony_2.jpg",
+"pins3/cedar_6.jpg"
+],
+"notes": [
+"горький апельсин",
+"пион",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|M26": {
+"files": [
+"pins3/dates_0.jpg",
+"pins3/caramel_6.jpg",
+"pins3/blackberry_8.jpg"
+],
+"notes": [
+"засахаренные фрукты",
+"жевательная резинка",
+"черника"
+]
+},
+"ЖЕНСКИЕ|P1": {
+"files": [
+"pins3/lychee_1.jpg",
+"pins3/bergamot_6.jpg",
+"pins3/peony_3.jpg"
+],
+"notes": [
+"личи",
+"бергамот",
+"пион"
+]
+},
+"ЖЕНСКИЕ|P5": {
+"files": [
+"pins3/raspberry_9.jpg",
+"pins3/gardenia_9.jpg",
+"pins3/honey_9.jpg"
+],
+"notes": [
+"малина",
+"гардения",
+"белый мёд"
+]
+},
+"ЖЕНСКИЕ|P7": {
+"files": [
+"pins3/mandarin_9.jpg",
+"pins3/stone_0.jpg",
+"pins3/amber_0.jpg"
+],
+"notes": [
+"зелёный мандарин",
+"соль",
+"серая амбра"
+]
+},
+"ЖЕНСКИЕ|P8": {
+"files": [
+"pins3/mango_4.jpg",
+"pins3/incense_5.jpg",
+"pins3/vanilla_6.jpg"
+],
+"notes": [
+"манго",
+"олибанум",
+"ваниль"
+]
+},
+"ЖЕНСКИЕ|S2": {
+"files": [
+"pins3/raspberry_2.jpg",
+"pins3/peony_6.jpg",
+"pins3/praline_5.jpg"
+],
+"notes": [
+"малина",
+"пион",
+"пралине"
+]
+},
+"ЖЕНСКИЕ|S7": {
+"files": [
+"pins3/pear_4.jpg",
+"pins3/lychee_1.jpg",
+"pins3/gardenia_4.jpg"
+],
+"notes": [
+"груша",
+"личи",
+"гардения"
+]
+},
+"ЖЕНСКИЕ|S16": {
+"files": [
+"pins3/bergamot_5.jpg",
+"pins3/peach_7.jpg",
+"pins3/cedar_0.jpg"
+],
+"notes": [
+"бергамот",
+"персик",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|T2": {
+"files": [
+"pins3/mandarin_0.jpg",
+"pins3/ginger_8.jpg",
+"pins3/tuberose_5.jpg"
+],
+"notes": [
+"мандарин",
+"имбирь",
+"тубероза"
+]
+},
+"ЖЕНСКИЕ|T15": {
+"files": [
+"pins3/lemon_9.jpg",
+"pins3/lotus_2.jpg",
+"pins3/cedar_4.jpg"
+],
+"notes": [
+"амальфийский лимон",
+"лотос",
+"виргинский кедр"
+]
+},
+"ЖЕНСКИЕ|V9": {
+"files": [
+"pins3/passionfruit_4.jpg",
+"pins3/grapefruit_9.jpg",
+"pins3/orchid_8.jpg"
+],
+"notes": [
+"маракуйя",
+"грейпфрут",
+"ванильная орхидея"
+]
+},
+"ЖЕНСКИЕ|V10": {
+"files": [
+"pins3/raspberry_9.jpg",
+"pins3/peony_9.jpg",
+"pins3/praline_3.jpg"
+],
+"notes": [
+"малина",
+"пион",
+"пралине"
+]
+},
+"ЖЕНСКИЕ|V11": {
+"files": [
+"pins3/passionfruit_7.jpg",
+"pins3/grapefruit_6.jpg",
+"pins3/berries_9.jpg"
+],
+"notes": [
+"маракуйя",
+"грейпфрут",
+"красные ягоды"
+]
+},
+"ЖЕНСКИЕ|V12": {
+"files": [
+"pins3/pomegranate_1.jpg",
+"pins3/lotus_6.jpg",
+"pins3/amber_5.jpg"
+],
+"notes": [
+"гранат",
+"лотос",
+"амбра"
+]
+},
+"ЖЕНСКИЕ|V13": {
+"files": [
+"pins3/cardamom_0.jpg",
+"pins3/coconut_9.jpg",
+"pins3/sandalwood_7.jpg"
+],
+"notes": [
+"кардамон",
+"кокос",
+"сандал"
+]
+},
+"ЖЕНСКИЕ|V15": {
+"files": [
+"pins3/pear_5.jpg",
+"pins3/freesia_0.jpg",
+"pins3/cedar_7.jpg"
+],
+"notes": [
+"груша",
+"фрезия",
+"виргинский кедр"
+]
+},
+"ЖЕНСКИЕ|V17": {
+"files": [
+"pins3/fig_6.jpg",
+"pins3/cardamom_8.jpg",
+"pins3/narcissus_9.jpg"
+],
+"notes": [
+"инжир",
+"кардамон",
+"нарцисс"
+]
+},
+"ЖЕНСКИЕ|V19": {
+"files": [
+"pins3/berries_0.jpg",
+"pins3/pineapple_3.jpg",
+"pins3/blackberry_3.jpg"
+],
+"notes": [
+"красные ягоды",
+"ананас",
+"ежевика"
+]
+},
+"ЖЕНСКИЕ|V21": {
+"files": [
+"pins3/plum_6.jpg",
+"pins3/rose_2.jpg",
+"pins3/amber_9.jpg"
+],
+"notes": [
+"слива",
+"чёрная роза",
+"амбра"
+]
+},
+"ЖЕНСКИЕ|V22": {
+"files": [
+"pins3/pear_8.jpg",
+"pins3/iris_5.jpg",
+"pins3/coconut_4.jpg"
+],
+"notes": [
+"груша",
+"ирис",
+"кокос"
+]
+},
+"ЖЕНСКИЕ|V23": {
+"files": [
+"pins3/caramel_7.jpg",
+"pins3/peony_6.jpg",
+"pins3/pink_pepper_3.jpg"
+],
+"notes": [
+"блеск для губ",
+"пион",
+"розовый перец"
+]
+},
+"ЖЕНСКИЕ|V24": {
+"files": [
+"pins3/apple_0.jpg",
+"pins3/cream_0.jpg",
+"pins3/bergamot_0.jpg"
+],
+"notes": [
+"яблоко",
+"взбитые сливки",
+"бергамот"
+]
+},
+"ЖЕНСКИЕ|V25": {
+"files": [
+"pins3/flowers_0.jpg",
+"pins3/praline_7.jpg",
+"pins2/musk_0.jpg"
+],
+"notes": [
+"цветочные ноты",
+"пралине",
+"мускус"
+]
+},
+"ЖЕНСКИЕ|V26": {
+"files": [
+"pins3/sea_2.jpg",
+"pins3/green_9.jpg",
+"pins3/cherry_blossom_0.jpg"
+],
+"notes": [
+"морские ноты",
+"алоэ вера",
+"цветок сливы"
+]
+},
+"ЖЕНСКИЕ|Y1": {
+"files": [
+"pins3/strawberry_1.jpg",
+"pins3/sea_2.jpg",
+"pins3/peony_2.jpg"
+],
+"notes": [
+"клубника",
+"калон",
+"пион"
+]
+},
+"ЖЕНСКИЕ|Y11": {
+"files": [
+"pins3/pink_pepper_0.jpg",
+"pins3/coffee_4.jpg",
+"pins3/patchouli_9.jpg"
+],
+"notes": [
+"розовый перец",
+"кофе",
+"пачули"
+]
+},
+"ЖЕНСКИЕ|Y15": {
+"files": [
+"pins3/lavender_4.jpg",
+"pins3/jasmine_3.jpg",
+"pins3/cedar_6.jpg"
+],
+"notes": [
+"лаванда",
+"жасмин",
+"кедр"
+]
+},
+"ЖЕНСКИЕ|Z1": {
+"files": [
+"pins3/pink_pepper_8.jpg",
+"pins3/cream_5.jpg",
+"pins3/sandalwood_0.jpg"
+],
+"notes": [
+"розовый перец",
+"взбитые сливки",
+"сандал"
+]
+},
+"МУЖСКИЕ|A1": {
+"files": [
+"pins3/grapefruit_2.jpg",
+"pins3/sea_6.jpg",
+"pins3/cardamom_0.jpg"
+],
+"notes": [
+"грейпфрут",
+"морские ноты",
+"кардамон"
+]
+},
+"МУЖСКИЕ|A10": {
+"files": [
+"pins3/melon_2.jpg",
+"pins3/mint_3.jpg",
+"pins3/sea_9.jpg"
+],
+"notes": [
+"дыня",
+"мята",
+"морская вода"
+]
+},
+"МУЖСКИЕ|A17": {
+"files": [
+"pins3/mandarin_9.jpg",
+"pins3/lavender_8.jpg",
+"pins3/tonka_0.jpg"
+],
+"notes": [
+"зелёный мандарин",
+"лаванда",
+"бобы тонка"
+]
+},
+"МУЖСКИЕ|B4": {
+"files": [
+"pins2/neroli3_2.jpg",
+"pins3/lavender_4.jpg",
+"pins3/cardamom_8.jpg"
+],
+"notes": [
+"нероли",
+"лаванда",
+"кардамон"
+]
+},
+"МУЖСКИЕ|B8": {
+"files": [
+"pins3/orange_3.jpg",
+"pins3/lavender_0.jpg",
+"pins3/cedar_0.jpg"
+],
+"notes": [
+"апельсин",
+"лаванда",
+"виргинский кедр"
+]
+},
+"МУЖСКИЕ|B13": {
+"files": [
+"pins3/grapefruit_7.jpg",
+"pins3/ginger_3.jpg",
+"pins3/vetiver_0.jpg"
+],
+"notes": [
+"грейпфрут",
+"имбирь",
+"ветивер"
+]
+},
+"МУЖСКИЕ|C6": {
+"files": [
+"pins3/sea_0.jpg",
+"pins2/neroli3_0.jpg",
+"pins3/vanilla_2.jpg"
+],
+"notes": [
+"морские ноты",
+"нероли",
+"ваниль"
+]
+},
+"МУЖСКИЕ|C8": {
+"files": [
+"pins3/spices_3.jpg",
+"pins3/ginger_8.jpg",
+"pins3/gardenia_9.jpg"
+],
+"notes": [
+"специи",
+"имбирь",
+"гардения"
+]
+},
+"МУЖСКИЕ|C9": {
+"files": [
+"pins3/lavender_4.jpg",
+"pins3/green_1.jpg",
+"pins3/oakmoss_3.jpg"
+],
+"notes": [
+"лаванда",
+"гальбанум",
+"дубовый мох"
+]
+},
+"МУЖСКИЕ|C10": {
+"files": [
+"pins3/mint_3.jpg",
+"pins3/ginger_3.jpg",
+"pins3/incense_5.jpg"
+],
+"notes": [
+"мята",
+"имбирь",
+"ладан"
+]
+},
+"МУЖСКИЕ|C33": {
+"files": [
+"pins3/lime_1.jpg",
+"pins3/alcohol_0.jpg",
+"pins3/leather_7.jpg"
+],
+"notes": [
+"лайм",
+"водка",
+"кожа"
+]
+},
+"МУЖСКИЕ|C36": {
+"files": [
+"pins3/mandarin_0.jpg",
+"pins3/sea_6.jpg",
+"pins3/freesia_4.jpg"
+],
+"notes": [
+"мандарин",
+"морские ноты",
+"фрезия"
+]
+},
+"МУЖСКИЕ|D14": {
+"files": [
+"pins3/cinnamon_1.jpg",
+"pins3/lavender_8.jpg",
+"pins3/vetiver_9.jpg"
+],
+"notes": [
+"корица",
+"лаванда",
+"гаитянский ветивер"
+]
+},
+"МУЖСКИЕ|D15": {
+"files": [
+"pins3/pepper_1.jpg",
+"pins3/vetiver_0.jpg",
+"pins3/amber_0.jpg"
+],
+"notes": [
+"перец",
+"ветивер",
+"амброксан"
+]
+},
+"МУЖСКИЕ|D18": {
+"files": [
+"pins3/lychee_3.jpg",
+"pins3/orange_7.jpg",
+"pins3/tonka_6.jpg"
+],
+"notes": [
+"личи",
+"апельсин",
+"бобы тонка"
+]
+},
+"МУЖСКИЕ|D23": {
+"files": [
+"pins3/grapefruit_9.jpg",
+"pins3/cardamom_0.jpg",
+"pins3/tobacco_1.jpg"
+],
+"notes": [
+"грейпфрут",
+"кардамон",
+"табак"
+]
+},
+"МУЖСКИЕ|D24": {
+"files": [
+"pins3/lemon_4.jpg",
+"pins3/incense_0.jpg",
+"pins3/amber_5.jpg"
+],
+"notes": [
+"лимон",
+"элеми",
+"амбра"
+]
+},
+"МУЖСКИЕ|E8": {
+"files": [
+"pins3/praline_5.jpg",
+"pins3/caramel_9.jpg",
+"pins3/incense_3.jpg"
+],
+"notes": [
+"каштан",
+"сахар",
+"дымные ноты"
+]
+},
+"МУЖСКИЕ|G7": {
+"files": [
+"pins3/lime_0.jpg",
+"pins3/mandarin_4.jpg",
+"pins3/sea_0.jpg"
+],
+"notes": [
+"лайм",
+"мандарин",
+"морские ноты"
+]
+},
+"МУЖСКИЕ|G18": {
+"files": [
+"pins3/grapefruit_2.jpg",
+"pins3/cardamom_8.jpg",
+"pins3/incense_8.jpg"
+],
+"notes": [
+"грейпфрут",
+"кардамон",
+"олибанум"
+]
+},
+"МУЖСКИЕ|G20": {
+"files": [
+"pins3/pink_pepper_0.jpg",
+"pins3/vetiver_0.jpg",
+"pins3/patchouli_1.jpg"
+],
+"notes": [
+"розовый перец",
+"ветивер",
+"пачули"
+]
+},
+"МУЖСКИЕ|H7": {
+"files": [
+"pins3/apple_2.jpg",
+"pins3/cinnamon_1.jpg",
+"pins3/vanilla_9.jpg"
+],
+"notes": [
+"яблоко",
+"корица",
+"ваниль"
+]
+},
+"МУЖСКИЕ|H13": {
+"files": [
+"pins3/orange_3.jpg",
+"pins3/pepper_0.jpg",
+"pins3/incense_5.jpg"
+],
+"notes": [
+"апельсин",
+"перец",
+"бензоин"
+]
+},
+"МУЖСКИЕ|J7": {
+"files": [
+"pins3/lavender_0.jpg",
+"pins3/honey_6.jpg",
+"pins3/tobacco_0.jpg"
+],
+"notes": [
+"лаванда",
+"мёд",
+"табак"
+]
+},
+"МУЖСКИЕ|K23": {
+"files": [
+"pins3/lemon_6.jpg",
+"pins3/mint_3.jpg",
+"pins3/cedar_3.jpg"
+],
+"notes": [
+"лимон",
+"водяная мята",
+"кедр"
+]
+},
+"МУЖСКИЕ|L11": {
+"files": [
+"pins3/ginger_3.jpg",
+"pins3/sea_9.jpg",
+"pins3/vetiver_9.jpg"
+],
+"notes": [
+"имбирь",
+"водные ноты",
+"ветивер"
+]
+},
+"МУЖСКИЕ|L14": {
+"files": [
+"pins3/cinnamon_5.jpg",
+"pins3/sandalwood_8.jpg",
+"pins3/patchouli_3.jpg"
+],
+"notes": [
+"кассия",
+"сандал",
+"пачули"
+]
+},
+"МУЖСКИЕ|L17": {
+"files": [
+"pins3/cardamom_4.jpg",
+"pins3/cedar_0.jpg",
+"pins3/leather_0.jpg"
+],
+"notes": [
+"кардамон",
+"виргинский кедр",
+"замша"
+]
+},
+"МУЖСКИЕ|M16": {
+"files": [
+"pins3/lavender_8.jpg",
+"pins3/dates_3.jpg",
+"pins3/oakmoss_9.jpg"
+],
+"notes": [
+"лаванда",
+"сухофрукты",
+"дубовый мох"
+]
+},
+"МУЖСКИЕ|P2": {
+"files": [
+"pins3/blackcurrant_9.jpg",
+"pins3/amber_2.jpg",
+"pins3/tonka_5.jpg"
+],
+"notes": [
+"чёрная смородина",
+"серая амбра",
+"бобы тонка"
+]
+},
+"МУЖСКИЕ|P11": {
+"files": [
+"pins3/mint_1.jpg",
+"pins3/cinnamon_1.jpg",
+"pins3/leather_2.jpg"
+],
+"notes": [
+"мята",
+"корица",
+"кожа"
+]
+},
+"МУЖСКИЕ|P15": {
+"files": [
+"pins3/sea_2.jpg",
+"pins3/grapefruit_2.jpg",
+"pins3/oakmoss_0.jpg"
+],
+"notes": [
+"морские ноты",
+"грейпфрут",
+"дубовый мох"
+]
+},
+"МУЖСКИЕ|P17": {
+"files": [
+"pins3/lavender_4.jpg",
+"pins3/sea_0.jpg",
+"pins3/amber_0.jpg"
+],
+"notes": [
+"лаванда",
+"морские ноты",
+"амбра"
+]
+},
+"МУЖСКИЕ|T1": {
+"files": [
+"pins3/mandarin_9.jpg",
+"pins3/violet_0.jpg",
+"pins3/tonka_0.jpg"
+],
+"notes": [
+"зелёный мандарин",
+"фиалка",
+"бобы тонка"
+]
+},
+"МУЖСКИЕ|T12": {
+"files": [
+"pins3/bergamot_0.jpg",
+"pins3/violet_6.jpg",
+"pins3/oakmoss_9.jpg"
+],
+"notes": [
+"бергамот",
+"фиалка",
+"дубовый мох"
+]
+},
+"МУЖСКИЕ|V14": {
+"files": [
+"pins3/mint_1.jpg",
+"pins3/amber_2.jpg",
+"pins3/vanilla_3.jpg"
+],
+"notes": [
+"мята",
+"амброксан",
+"мадагаскарская ваниль"
+]
+},
+"МУЖСКИЕ|V20": {
+"files": [
+"pins3/pitaya_0.jpg",
+"pins3/pepper_1.jpg",
+"pins3/saffron_0.jpg"
+],
+"notes": [
+"карамбола",
+"перец",
+"шафран"
+]
+},
+"УНИСЕКС|A4": {
+"files": [
+"pins3/berries_3.jpg",
+"pins3/honey_0.jpg",
+"pins3/blackcurrant_4.jpg"
+],
+"notes": [
+"лесные ягоды",
+"мёд",
+"чёрная смородина"
+]
+},
+"УНИСЕКС|A6": {
+"files": [
+"pins3/iris_7.jpg",
+"pins3/cedar_4.jpg",
+"pins3/incense_0.jpg"
+],
+"notes": [
+"корень ириса",
+"кедр",
+"мирра"
+]
+},
+"УНИСЕКС|B6": {
+"files": [
+"pins3/rhubarb_0.jpg",
+"pins3/cedar_7.jpg",
+"pins3/leather_0.jpg"
+],
+"notes": [
+"ревень",
+"кедр",
+"кожа"
+]
+},
+"УНИСЕКС|B7": {
+"files": [
+"pins3/pepper_0.jpg",
+"pins3/tobacco_4.jpg",
+"pins3/patchouli_1.jpg"
+],
+"notes": [
+"перец",
+"табак",
+"пачули"
+]
+},
+"УНИСЕКС|E1": {
+"files": [
+"pins3/lychee_1.jpg",
+"pins3/neroli_8.jpg",
+"pins3/oakmoss_3.jpg"
+],
+"notes": [
+"личи",
+"апельсиновый цвет",
+"мох"
+]
+},
+"УНИСЕКС|E31": {
+"files": [
+"pins3/pear_8.jpg",
+"pins3/ginger_8.jpg",
+"pins2/neroli3_2.jpg"
+],
+"notes": [
+"груша",
+"имбирь",
+"апельсиновый цвет"
+]
+},
+"УНИСЕКС|E33": {
+"files": [
+"pins3/grapefruit_6.jpg",
+"pins3/flowers_4.jpg",
+"pins3/patchouli_3.jpg"
+],
+"notes": [
+"грейпфрут",
+"петалия",
+"индонезийские пачули"
+]
+},
+"УНИСЕКС|H2": {
+"files": [
+"pins3/lavender_0.jpg",
+"pins3/osmanthus_0.jpg",
+"pins3/woods_0.jpg"
+],
+"notes": [
+"лаванда",
+"османтус",
+"акигалавуд"
+]
+},
+"УНИСЕКС|J1": {
+"files": [
+"pins2/musk_9.jpg",
+"pins3/woods_2.jpg",
+"pins3/amber_9.jpg"
+],
+"notes": [
+"цеталокс",
+"древесные ноты",
+"амбра"
+]
+},
+"УНИСЕКС|L10": {
+"files": [
+"pins3/orange_9.jpg",
+"pins3/bergamot_5.jpg",
+"pins3/mandarin_0.jpg"
+],
+"notes": [
+"сицилийский апельсин",
+"бергамот",
+"мандарин"
+]
+},
+"УНИСЕКС|L20": {
+"files": [
+"pins3/grapefruit_9.jpg",
+"pins3/bergamot_6.jpg",
+"pins3/incense_3.jpg"
+],
+"notes": [
+"грейпфрут",
+"бергамот",
+"лабданум"
+]
+},
+"УНИСЕКС|L22": {
+"files": [
+"pins3/grapefruit_7.jpg",
+"pins3/bergamot_6.jpg",
+"pins3/ginger_3.jpg"
+],
+"notes": [
+"грейпфрут",
+"бергамот",
+"имбирь"
+]
+},
+"УНИСЕКС|M17": {
+"files": [
+"pins3/honey_9.jpg",
+"pins3/dates_0.jpg",
+"pins3/caramel_6.jpg"
+],
+"notes": [
+"мёд",
+"финики",
+"сахар"
+]
+},
+"УНИСЕКС|N2": {
+"files": [
+"pins3/coffee_1.jpg",
+"pins3/mango_1.jpg",
+"pins3/peach_2.jpg"
+],
+"notes": [
+"кофе",
+"манго",
+"персик"
+]
+},
+"УНИСЕКС|R1": {
+"files": [
+"pins3/mandarin_4.jpg",
+"pins3/chocolate_2.jpg",
+"pins3/cherry_blossom_9.jpg"
+],
+"notes": [
+"мандарин",
+"белый шоколад",
+"цветок миндаля"
+]
+},
+"УНИСЕКС|V1": {
+"files": [
+"pins3/mango_4.jpg",
+"pins3/iris_4.jpg",
+"pins3/caramel_0.jpg"
+],
+"notes": [
+"манго",
+"ирис",
+"розовая глазурь"
+]
+},
+"УНИСЕКС|Z9": {
+"files": [
+"pins3/alcohol_1.jpg",
+"pins3/peach_6.jpg",
+"pins3/woods_0.jpg"
+],
+"notes": [
+"шампанское",
+"абрикос",
+"чёрное дерево"
+]
+},
+"УНИСЕКС|Z10": {
+"files": [
+"pins2/neroli3_0.jpg",
+"pins3/pepper_1.jpg",
+"pins3/amber_5.jpg"
+],
+"notes": [
+"нероли",
+"чёрный перец",
+"амбра"
+]
+},
+"ПРЕМИУМ|B1": {
+"files": [
+"pins3/saffron_2.jpg",
+"pins3/osmanthus_0.jpg",
+"pins3/stone_6.jpg"
+],
+"notes": [
+"шафран",
+"китайский османтус",
+"минеральные ноты"
+]
+},
+"ПРЕМИУМ|B5": {
+"files": [
+"pins3/bergamot_0.jpg",
+"pins3/violet_0.jpg",
+"pins3/cedar_6.jpg"
+],
+"notes": [
+"бергамот",
+"фиалка",
+"кедр"
+]
+},
+"ПРЕМИУМ|B9": {
+"files": [
+"pins3/flowers_0.jpg",
+"pins3/vetiver_0.jpg",
+"pins3/woods_7.jpg"
+],
+"notes": [
+"цветок липы",
+"ветивер",
+"джордживуд"
+]
+},
+"ПРЕМИУМ|C2": {
+"files": [
+"pins3/pink_pepper_3.jpg",
+"pins3/jasmine_3.jpg",
+"pins3/cedar_3.jpg"
+],
+"notes": [
+"розовый перец",
+"китайский жасмин",
+"бальзамическая пихта"
+]
+},
+"ПРЕМИУМ|C15": {
+"files": [
+"pins3/apple_8.jpg",
+"pins3/pineapple_9.jpg",
+"pins3/cedar_4.jpg"
+],
+"notes": [
+"яблоко",
+"ананас",
+"берёза"
+]
+},
+"ПРЕМИУМ|E3": {
+"files": [
+"pins3/bergamot_5.jpg",
+"pins3/vetiver_9.jpg",
+"pins3/musk_7.jpg"
+],
+"notes": [
+"бергамот",
+"ветивер",
+"мускус"
+]
+},
+"ПРЕМИУМ|E4": {
+"files": [
+"pins3/bergamot_0.jpg",
+"pins3/amber_5.jpg",
+"pins2/musk_0.jpg"
+],
+"notes": [
+"бергамот",
+"амбра",
+"мускус"
+]
+},
+"ПРЕМИУМ|H1": {
+"files": [
+"pins2/osmanthus2_2.jpg",
+"pins3/sandalwood_8.jpg",
+"pins3/vanilla_7.jpg"
+],
+"notes": [
+"османтус",
+"сандал",
+"ваниль"
+]
+},
+"ПРЕМИУМ|K1": {
+"files": [
+"pins3/saffron_8.jpg",
+"pins3/caramel_7.jpg",
+"pins3/oakmoss_0.jpg"
+],
+"notes": [
+"шафран",
+"сахар",
+"дубовый мох"
+]
+},
+"ПРЕМИУМ|K4": {
+"files": [
+"pins3/alcohol_6.jpg",
+"pins3/tonka_6.jpg",
+"pins3/praline_7.jpg"
+],
+"notes": [
+"коньяк",
+"бобы тонка",
+"пралине"
+]
+},
+"ПРЕМИУМ|K5": {
+"files": [
+"pins2/osmanthus2_2.jpg",
+"pins3/peach_6.jpg",
+"pins3/tuberose_3.jpg"
+],
+"notes": [
+"османтус",
+"персик",
+"индийская тубероза"
+]
+},
+"ПРЕМИУМ|K6": {
+"files": [
+"pins3/caramel_9.jpg",
+"pins3/lime_0.jpg",
+"pins3/cinnamon_5.jpg"
+],
+"notes": [
+"кока-кола",
+"лайм",
+"корица"
+]
+},
+"ПРЕМИУМ|K7": {
+"files": [
+"pins3/frangipani_6.jpg",
+"pins3/coconut_9.jpg",
+"pins3/incense_8.jpg"
+],
+"notes": [
+"цветок тиаре",
+"кокос",
+"лабданум"
+]
+},
+"ПРЕМИУМ|K9": {
+"files": [
+"pins3/cardamom_0.jpg",
+"pins3/alcohol_0.jpg",
+"pins3/cedar_7.jpg"
+],
+"notes": [
+"кардамон",
+"ром",
+"кедр"
+]
+},
+"ПРЕМИУМ|L2": {
+"files": [
+"pins3/pear_4.jpg",
+"pins3/apple_0.jpg",
+"pins3/oakmoss_0.jpg"
+],
+"notes": [
+"груша",
+"яблоко",
+"мох"
+]
+},
+"ПРЕМИУМ|L3": {
+"files": [
+"pins3/lemon_6.jpg",
+"pins3/ginger_8.jpg",
+"pins3/incense_8.jpg"
+],
+"notes": [
+"цитрон",
+"нигерийский имбирь",
+"олибанум"
+]
+},
+"ПРЕМИУМ|L4": {
+"files": [
+"pins3/lemon_9.jpg",
+"pins3/peach_7.jpg",
+"pins3/fig_9.jpg"
+],
+"notes": [
+"цитрон",
+"абрикос",
+"инжир"
+]
+},
+"ПРЕМИУМ|M1": {
+"files": [
+"pins2/musk_9.jpg",
+"pins3/woods_2.jpg",
+"pins3/amber_9.jpg"
+],
+"notes": [
+"исо-е-супер",
+"древесные ноты",
+"амбра"
+]
+},
+"ПРЕМИУМ|M2": {
+"files": [
+"pins3/amber_0.jpg",
+"pins3/musk_7.jpg",
+"pins3/woods_7.jpg"
+],
+"notes": [
+"амброксан",
+"мускус",
+"древесные ноты"
+]
+},
+"ПРЕМИУМ|M7": {
+"files": [
+"pins3/oud_6.jpg",
+"pins3/saffron_0.jpg",
+"pins3/tobacco_1.jpg"
+],
+"notes": [
+"уд",
+"шафран",
+"табак"
+]
+},
+"ПРЕМИУМ|N1": {
+"files": [
+"pins3/pineapple_3.jpg",
+"pins3/patchouli_1.jpg",
+"pins3/oakmoss_3.jpg"
+],
+"notes": [
+"ананас",
+"пачули",
+"дубовый мох"
+]
+},
+"ПРЕМИУМ|N10": {
+"files": [
+"pins3/saffron_2.jpg",
+"pins3/tobacco_4.jpg",
+"pins3/coffee_1.jpg"
+],
+"notes": [
+"шафран",
+"табак",
+"кофе"
+]
+},
+"ПРЕМИУМ|S3": {
+"files": [
+"pins3/orange_9.jpg",
+"pins3/lemon_4.jpg",
+"pins3/fruits_3.jpg"
+],
+"notes": [
+"сицилийский апельсин",
+"сицилийский лимон",
+"фруктовые ноты"
+]
+},
+"ПРЕМИУМ|S4": {
+"files": [
+"pins3/hyacinth_0.jpg",
+"pins3/pink_pepper_8.jpg",
+"pins3/patchouli_9.jpg"
+],
+"notes": [
+"гиацинт",
+"розовый перец",
+"пачули"
+]
+},
+"ПРЕМИУМ|T3": {
+"files": [
+"pins3/lemon_6.jpg",
+"pins3/mint_3.jpg",
+"pins3/neroli_8.jpg"
+],
+"notes": [
+"лимон",
+"мята",
+"цветок апельсина"
+]
+},
+"ПРЕМИУМ|T4": {
+"files": [
+"pins3/tobacco_4.jpg",
+"pins3/chocolate_1.jpg",
+"pins3/dates_3.jpg"
+],
+"notes": [
+"табачный лист",
+"какао",
+"сухофрукты"
+]
+},
+"ПРЕМИУМ|T6": {
+"files": [
+"pins3/peach_2.jpg",
+"pins3/alcohol_6.jpg",
+"pins3/tonka_5.jpg"
+],
+"notes": [
+"персик",
+"ром",
+"бобы тонка"
+]
+},
+"ПРЕМИУМ|T9": {
+"files": [
+"pins3/cherry_0.jpg",
+"pins3/plum_1.jpg",
+"pins3/incense_0.jpg"
+],
+"notes": [
+"чёрная вишня",
+"слива",
+"перуанский бальзам"
+]
+},
+"ПРЕМИУМ|T10": {
+"files": [
+"pins3/cardamom_4.jpg",
+"pins3/oud_6.jpg",
+"pins3/vanilla_4.jpg"
+],
+"notes": [
+"кардамон",
+"уд",
+"ваниль"
+]
+},
+"ПРЕМИУМ|T11": {
+"files": [
+"pins2/neroli3_2.jpg",
+"pins3/amber_2.jpg",
+"pins3/woods_0.jpg"
+],
+"notes": [
+"цветок горького апельсина",
+"амбра",
+"древесные ноты"
+]
+},
+"ПРЕМИУМ|T14": {
+"files": [
+"pins3/mandarin_9.jpg",
+"pins3/orange_7.jpg",
+"pins3/sea_6.jpg"
+],
+"notes": [
+"мандарин",
+"апельсин",
+"озоновые ноты"
+]
+},
+"ПРЕМИУМ|T17": {
+"files": [
+"pins3/praline_3.jpg",
+"pins3/tuberose_5.jpg",
+"pins3/coconut_4.jpg"
+],
+"notes": [
+"фисташка",
+"тубероза",
+"кокос"
+]
+},
+"ПРЕМИУМ|T20": {
+"files": [
+"pins3/passionfruit_7.jpg",
+"pins3/lily_valley_6.jpg",
+"pins3/sandalwood_7.jpg"
+],
+"notes": [
+"маракуйя",
+"ландыш",
+"сандал"
+]
+},
+"ПРЕМИУМ|T30": {
+"files": [
+"pins3/praline_7.jpg",
+"pins3/vanilla_2.jpg",
+"pins3/tonka_0.jpg"
+],
+"notes": [
+"горький миндаль",
+"ваниль",
+"абсолю бобов тонка"
+]
+}
+}

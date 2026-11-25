@@ -6,7 +6,8 @@ Usage: python3 site_cards_v148.py <site dir> <picks.json> <pins dir> <pdf images
 import sys, os, json, re, math, shutil
 from PIL import Image
 SITE, PICKS, PINS, PDFI, CUT, CHO = sys.argv[1:7]
-ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))   # crop closer: the note fills the frame
+ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))
+CP = json.load(open(os.environ['CARD_PHOTOS'], encoding='utf-8')) if os.environ.get('CARD_PHOTOS') else {}   # crop closer: the note fills the frame
 s = open(f'{SITE}/catalog.html', encoding='utf-8').read()
 base = json.loads(s[s.index('/*DATA_START*/') + 14:s.index('/*DATA_END*/')])
 t = open(f'{SITE}/tips.js', encoding='utf-8').read(); tips = json.loads(t[t.index('window.TIPS=') + 12:].rstrip().rstrip(';'))
@@ -133,12 +134,25 @@ NEW = ['ЖЕНСКИЕ|C3', 'ЖЕНСКИЕ|J6', 'МУЖСКИЕ|D18', 'МУЖС
 COL = {'Свежий': ['green', 'yellow', 'mauve'], 'Сладкий': ['pink', 'brown', 'mauve'], 'Свежий/Сладкий': ['yellow', 'pink', 'green']}
 
 os.makedirs(f'{SITE}/img/notes', exist_ok=True); os.makedirs(f'{SITE}/img/bottles', exist_ok=True)
-def put_note(src, name, zoom=1.0):
+def harmonize(im):
+    import numpy as np
+    a = np.asarray(im, np.float32) / 255; L = (a @ [.2126, .7152, .0722]); m = float(L.mean())
+    g = min(1.45, max(.75, np.log(.30) / np.log(max(m, .02))))           # one common depth: mean lightness ~ .30
+    a = a ** g; L = a @ [.2126, .7152, .0722]
+    sat = float((a.max(-1) - a.min(-1)).mean()); k = min(1.0, .42 / max(sat, 1e-3))   # no candy-bright tiles
+    a = L[..., None] + (a - L[..., None]) * k
+    a = a * [1.03, 1.0, .95]                                            # one warm tone over the whole set
+    h, w = L.shape; yy, xx = np.mgrid[0:h, 0:w]; r = ((xx / w - .5) ** 2 + (yy / h - .5) ** 2) ** .5
+    a = a * (1 - .28 * np.clip(r - .25, 0, 1)[..., None])              # soft vignette
+    return Image.fromarray((np.clip(a, 0, 1) * 255).astype('uint8'))
+def put_note(src, name, zoom=1.0, grade=True):
     out = f'{SITE}/img/notes/{name}.webp'
     if not os.path.exists(out):
         im = Image.open(src).convert('RGB'); W, H = 300, 480; k = max(W / im.width, H / im.height) * zoom
         im = im.resize((math.ceil(im.width * k), math.ceil(im.height * k)), Image.LANCZOS)
-        x, y = (im.width - W) // 2, (im.height - H) // 2; im.crop((x, y, x + W, y + H)).save(out, 'WEBP', quality=74, method=6)
+        x, y = (im.width - W) // 2, (im.height - H) // 2; im = im.crop((x, y, x + W, y + H))
+        if grade: im = harmonize(im)
+        im.save(out, 'WEBP', quality=76, method=6)
     return f'img/notes/{name}.webp'
 cut = {(c['sec'], c['code']): c['file'] for c in json.load(open(f'{CUT}/list.json'))}
 rot = {}
@@ -148,10 +162,12 @@ for i, d in enumerate(base):
     if k in PDF:
         x = PDF[k]; c = dict(dir=x['dir'], brand=x['brand'], sex=x['sex'], season=x['season'], occ=x['occ'], style=x['style'],
                              pyr=[['top', x['top']], ['heart', x['heart']], ['base', x['base']]], sound=x['sound'], mkt=x['mkt'], col=x['col'], ok=True,
-                             ph=[put_note(f'{PDFI}/im-{j:03d}.png', f'pdf{j:03d}') for j in x['img']])
+                             ph=[put_note(f'{PDFI}/im-{j:03d}.png', f'pdf{j:03d}', grade=False) for j in x['img']])
     else:
         ph = []
-        for th, note in picks.get(k, []):
+        if k in CP:
+            ph = [put_note(f'{PINS}/{f}', os.path.splitext(f)[0].replace('/', '_'), ZOOM) for f in CP[k]['files']]
+        for th, note in ([] if k in CP else picks.get(k, [])):
             files = choices.get(th) or []
             if not files: continue
             n = rot.get(th, 0); rot[th] = n + 1; f = files[n % len(files)]
@@ -161,7 +177,7 @@ for i, d in enumerate(base):
     f = cut.get((d['category'][:3], d['number']))
     if f:
         shutil.copy(f'{CUT}/{f}', f'{SITE}/img/bottles/{f}'); c['bt'] = f'img/bottles/{f}'
-    c['notes'] = [n for th, n in picks.get(k, [])]
+    c['notes'] = CP[k]['notes'] if (k in CP and k not in PDF) else [n for th, n in picks.get(k, [])]
     if k in NEW: c['new'] = True
     cards[k] = c
 open(f'{SITE}/cards.js', 'w', encoding='utf-8').write(
