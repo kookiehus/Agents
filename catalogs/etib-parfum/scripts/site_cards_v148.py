@@ -6,7 +6,7 @@ Usage: python3 site_cards_v148.py <site dir> <picks.json> <pins dir> <pdf images
 import sys, os, json, re, math, shutil
 from PIL import Image
 SITE, PICKS, PINS, PDFI, CUT, CHO = sys.argv[1:7]
-ZOOM = float(os.environ.get('NOTE_ZOOM', '1.0'))
+ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))
 CP = json.load(open(os.environ['CARD_PHOTOS'], encoding='utf-8')) if os.environ.get('CARD_PHOTOS') else {}   # crop closer: the note fills the frame
 s = open(f'{SITE}/catalog.html', encoding='utf-8').read()
 base = json.loads(s[s.index('/*DATA_START*/') + 14:s.index('/*DATA_END*/')])
@@ -145,7 +145,9 @@ def harmonize(im):
     h, w = L.shape; yy, xx = np.mgrid[0:h, 0:w]; r = ((xx / w - .5) ** 2 + (yy / h - .5) ** 2) ** .5
     a = a * (1 - .28 * np.clip(r - .25, 0, 1)[..., None])              # soft vignette
     return Image.fromarray((np.clip(a, 0, 1) * 255).astype('uint8'))
-def put_note(src, name, zoom=1.0, grade=True):
+GRADE = os.environ.get('NOTE_GRADE', '0') == '1'
+def put_note(src, name, zoom=1.0, grade=None):
+    grade = GRADE if grade is None else grade
     out = f'{SITE}/img/notes/{name}.webp'
     if not os.path.exists(out):
         im = Image.open(src).convert('RGB'); W, H = 300, 480; k = max(W / im.width, H / im.height) * zoom
@@ -162,7 +164,7 @@ for i, d in enumerate(base):
     if k in PDF:
         x = PDF[k]; c = dict(dir=x['dir'], brand=x['brand'], sex=x['sex'], season=x['season'], occ=x['occ'], style=x['style'],
                              pyr=[['top', x['top']], ['heart', x['heart']], ['base', x['base']]], sound=x['sound'], mkt=x['mkt'], col=x['col'], ok=True,
-                             ph=[put_note(f'{PDFI}/im-{j:03d}.png', f'pdf{j:03d}', grade=False) for j in x['img']])
+                             ph=[put_note(f'{PINS}/{f}', os.path.splitext(os.path.basename(f))[0], grade=False) for f in CP[k]['files']] if k in CP else [put_note(f'{PDFI}/im-{j:03d}.png', f'pdf{j:03d}', grade=False) for j in x['img']])
     else:
         ph = []
         if k in CP:
