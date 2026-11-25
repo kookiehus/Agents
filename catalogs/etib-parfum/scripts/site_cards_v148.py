@@ -154,7 +154,7 @@ for i, d in enumerate(base):
             files = choices.get(th) or []
             if not files: continue
             n = rot.get(th, 0); rot[th] = n + 1; f = files[n % len(files)]
-            ph.append(put_note(f'{PINS}/{f}', os.path.splitext(f)[0]))
+            ph.append(put_note(f'{PINS}/{f}', os.path.splitext(f)[0].replace('/', '_')))
         c = dict(dir=direction(d), brand=brand(nm(d)), sex=SEX.get(d['category']) or SEX_P.get(d['number'], 'унисекс'), season=season(d), occ=occasion(d),
                  style=style(tip), pyr=d.get('pyr') or [], sound=sound(d), mkt=marketing(tip), col=COL[d['type']][i % 3], ok=False, ph=ph)
     f = cut.get((d['category'][:3], d['number']))
