@@ -6,7 +6,7 @@ Usage: python3 site_cards_v148.py <site dir> <picks.json> <pins dir> <pdf images
 import sys, os, json, re, math, shutil
 from PIL import Image
 SITE, PICKS, PINS, PDFI, CUT, CHO = sys.argv[1:7]
-ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))
+ZOOM = float(os.environ.get('NOTE_ZOOM', '1.0'))
 CP = json.load(open(os.environ['CARD_PHOTOS'], encoding='utf-8')) if os.environ.get('CARD_PHOTOS') else {}   # crop closer: the note fills the frame
 s = open(f'{SITE}/catalog.html', encoding='utf-8').read()
 base = json.loads(s[s.index('/*DATA_START*/') + 14:s.index('/*DATA_END*/')])
