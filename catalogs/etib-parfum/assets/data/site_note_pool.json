@@ -4,11 +4,9 @@
 "pins/alcohol_3.jpg",
 "pins/alcohol_5.jpg",
 "pins2/alcohol_3.jpg",
-"pins2/alcohol_6.jpg",
 "pins2/alcohol_8.jpg",
 "pins3/alcohol_1.jpg",
-"pins3/alcohol_6.jpg",
-"pins3/alcohol_0.jpg"
+"pins3/alcohol_6.jpg"
 ],
 "amber": [
 "pins/amber_1.jpg",
@@ -30,7 +28,6 @@
 "pins2/apple_2.jpg",
 "pins2/apple_5.jpg",
 "pins3/apple_2.jpg",
-"pins3/apple_8.jpg",
 "pins3/apple_0.jpg"
 ],
 "bergamot": [
@@ -51,7 +48,6 @@
 "pins2/berries_2.jpg",
 "pins2/berries_9.jpg",
 "pins3/berries_0.jpg",
-"pins3/berries_9.jpg",
 "pins3/berries_3.jpg"
 ],
 "blackberry": [
@@ -140,9 +136,7 @@
 "coffee": [
 "pins/coffee_2.jpg",
 "pins/coffee_6.jpg",
-"pins2/coffee_3.jpg",
 "pins2/coffee_7.jpg",
-"pins3/coffee_4.jpg",
 "pins3/coffee_1.jpg",
 "pins3/coffee_3.jpg"
 ],
@@ -229,7 +223,6 @@
 "pins/grapefruit_0.jpg",
 "pins2/grapefruit_1.jpg",
 "pins2/grapefruit_2.jpg",
-"pins2/grapefruit_3.jpg",
 "pins2/grapefruit_9.jpg",
 "pins3/grapefruit_2.jpg",
 "pins3/grapefruit_6.jpg",
@@ -260,8 +253,7 @@
 "pins/hyacinth_5.jpg",
 "pins2/hyacinth_1.jpg",
 "pins2/hyacinth_7.jpg",
-"pins3/hyacinth_0.jpg",
-"pins3/hyacinth_3.jpg"
+"pins3/hyacinth_0.jpg"
 ],
 "incense": [
 "pins/incense_1.jpg",
@@ -302,9 +294,6 @@
 "pins3/jasmine_1.jpg"
 ],
 "lavender": [
-"pins/lavender_2.jpg",
-"pins/lavender_4.jpg",
-"pins/lavender_1.jpg",
 "pins2/lavender_0.jpg",
 "pins2/lavender_2.jpg",
 "pins2/lavender_4.jpg",
@@ -313,10 +302,8 @@
 "pins3/lavender_8.jpg"
 ],
 "leather": [
-"pins/leather_2.jpg",
 "pins/leather_1.jpg",
 "pins2/leather_0.jpg",
-"pins2/leather_9.jpg",
 "pins3/leather_0.jpg",
 "pins3/leather_7.jpg",
 "pins3/leather_2.jpg"
@@ -333,7 +320,6 @@
 "pins3/lemon_6.jpg"
 ],
 "lilac": [
-"pins/lilac_1.jpg",
 "pins2/lilac_3.jpg",
 "pins2/lilac_9.jpg",
 "pins3/lilac_2.jpg",
@@ -361,7 +347,6 @@
 "pins3/lime_1.jpg"
 ],
 "lotus": [
-"pins/lotus_1.jpg",
 "pins2/lotus_1.jpg",
 "pins2/lotus_8.jpg",
 "pins3/lotus_2.jpg",
@@ -415,7 +400,6 @@
 "pins/musk_6.jpg",
 "pins2/musk_0.jpg",
 "pins2/musk_9.jpg",
-"pins2/musk_6.jpg",
 "pins3/musk_7.jpg"
 ],
 "narcissus": [
@@ -432,8 +416,7 @@
 "pins/neroli_4.jpg",
 "pins2/neroli3_0.jpg",
 "pins2/neroli3_2.jpg",
-"pins2/neroli_6.jpg",
-"pins3/neroli_8.jpg"
+"pins2/neroli_6.jpg"
 ],
 "oakmoss": [
 "pins/oakmoss_3.jpg",
@@ -449,7 +432,6 @@
 "pins/orange_2.jpg",
 "pins/orange_4.jpg",
 "pins/orange_7.jpg",
-"pins2/orange_3.jpg",
 "pins2/orange_6.jpg",
 "pins2/orange_7.jpg",
 "pins3/orange_7.jpg",
@@ -461,8 +443,7 @@
 "pins/orchid_0.jpg",
 "pins2/orchid_8.jpg",
 "pins2/orchid_6.jpg",
-"pins3/orchid_0.jpg",
-"pins3/orchid_8.jpg"
+"pins3/orchid_0.jpg"
 ],
 "osmanthus": [
 "pins/osmanthus_0.jpg",
@@ -501,7 +482,6 @@
 "peach": [
 "pins/peach_0.jpg",
 "pins/peach_5.jpg",
-"pins/peach_2.jpg",
 "pins2/peach_1.jpg",
 "pins2/peach_2.jpg",
 "pins2/peach_9.jpg",
@@ -537,20 +517,16 @@
 "pins/pepper_3.jpg",
 "pins2/pepper_0.jpg",
 "pins2/pepper_5.jpg",
-"pins3/pepper_0.jpg",
 "pins3/pepper_1.jpg"
 ],
 "pineapple": [
 "pins/pineapple_2.jpg",
 "pins/pineapple_7.jpg",
 "pins2/pineapple_4.jpg",
-"pins2/pineapple_9.jpg",
-"pins3/pineapple_3.jpg",
 "pins3/pineapple_9.jpg"
 ],
 "pink_pepper": [
 "pins/pink_pepper_4.jpg",
-"pins/pink_pepper_7.jpg",
 "pins2/pink_pepper_1.jpg",
 "pins2/pink_pepper_6.jpg",
 "pins2/pink_pepper_9.jpg",
@@ -625,7 +601,6 @@
 ],
 "saffron": [
 "pins/saffron_1.jpg",
-"pins/saffron_4.jpg",
 "pins2/saffron_1.jpg",
 "pins2/saffron_7.jpg",
 "pins2/saffron_2.jpg",
@@ -651,8 +626,6 @@
 "pins2/sea_2.jpg",
 "pins2/sea_3.jpg",
 "pins2/sea_5.jpg",
-"pins2/sea_0.jpg",
-"pins3/sea_0.jpg",
 "pins3/sea_2.jpg",
 "pins3/sea_6.jpg",
 "pins3/sea_9.jpg"
@@ -706,7 +679,6 @@
 "pins/vanilla_5.jpg",
 "pins/vanilla_7.jpg",
 "pins/vanilla_3.jpg",
-"pins2/vanilla_0.jpg",
 "pins2/vanilla_2.jpg",
 "pins2/vanilla_3.jpg",
 "pins2/vanilla_4.jpg",
@@ -722,7 +694,6 @@
 "vetiver": [
 "pins/vetiver_2.jpg",
 "pins/vetiver_3.jpg",
-"pins/vetiver_7.jpg",
 "pins2/vetiver_3.jpg",
 "pins2/vetiver_2.jpg",
 "pins2/vetiver_7.jpg",
@@ -768,5 +739,43 @@
 "pins3/stone_0.jpg",
 "pins3/stone_1.jpg",
 "pins3/stone_6.jpg"
+],
+"red_apple": [
+"pins4/red_apple_0.jpg",
+"pins4/red_apple_2.jpg",
+"pins4/red_apple_3.jpg",
+"pins4/red_apple_8.jpg"
+],
+"vodka": [
+"pins4/vodka_3.jpg",
+"pins4/vodka_4.jpg",
+"pins4/vodka_8.jpg"
+],
+"champagne": [
+"pins4/champagne_0.jpg",
+"pins4/champagne_2.jpg",
+"pins4/champagne_6.jpg"
+],
+"carambola": [
+"pins4/carambola_0.jpg",
+"pins4/carambola_3.jpg",
+"pins4/carambola_7.jpg",
+"pins4/carambola_9.jpg"
+],
+"gooseberry": [
+"pins4/gooseberry_0.jpg",
+"pins4/gooseberry_3.jpg",
+"pins4/gooseberry_4.jpg",
+"pins4/gooseberry_7.jpg"
+],
+"violet_leaf": [
+"pins4/violet_leaf_0.jpg",
+"pins4/violet_leaf_2.jpg",
+"pins4/violet_leaf_8.jpg"
+],
+"ice": [
+"pins4/ice_0.jpg",
+"pins4/ice_3.jpg",
+"pins4/ice_7.jpg"
 ]
 }

@@ -6,6 +6,8 @@ Usage: python3 site_cards_v148.py <site dir> <picks.json> <pins dir> <pdf images
 import sys, os, json, re, math, shutil
 from PIL import Image
 SITE, PICKS, PINS, PDFI, CUT, CHO = sys.argv[1:7]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import site_texts_v149 as TX
 ZOOM = float(os.environ.get('NOTE_ZOOM', '1.25'))
 CP = json.load(open(os.environ['CARD_PHOTOS'], encoding='utf-8')) if os.environ.get('CARD_PHOTOS') else {}   # crop closer: the note fills the frame
 s = open(f'{SITE}/catalog.html', encoding='utf-8').read()
@@ -174,8 +176,10 @@ for i, d in enumerate(base):
             if not files: continue
             n = rot.get(th, 0); rot[th] = n + 1; f = files[n % len(files)]
             ph.append(put_note(f'{PINS}/{f}', os.path.splitext(f)[0].replace('/', '_'), ZOOM))
-        c = dict(dir=direction(d), brand=brand(nm(d)), sex=SEX.get(d['category']) or SEX_P.get(d['number'], 'унисекс'), season=season(d), occ=occasion(d),
-                 style=style(tip), pyr=d.get('pyr') or [], sound=sound(d), mkt=marketing(tip), col=COL[d['type']][i % 3], ok=False, ph=ph)
+        sx = SEX.get(d['category']) or SEX_P.get(d['number'], 'унисекс'); bd = brand(nm(d))
+        c = dict(dir=TX.direction(d), brand=TX.FIX_BRAND.get(bd, bd), sex=sx, season=TX.season(d), occ=TX.occasion(d),
+                 style=TX.style(d), pyr=d.get('pyr') or [], sound=TX.sound(d), mkt=TX.marketing(d, sx), col=TX.colour(d), ok=False, ph=ph)
+    c.update(TX.OVERRIDE.get(k, {}))
     f = cut.get((d['category'][:3], d['number']))
     if f:
         shutil.copy(f'{CUT}/{f}', f'{SITE}/img/bottles/{f}'); c['bt'] = f'img/bottles/{f}'

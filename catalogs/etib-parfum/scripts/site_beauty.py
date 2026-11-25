@@ -28,7 +28,7 @@ def feat(f):
 def dE(a, b): return float(np.linalg.norm(feat(a)['lab'] - feat(b)['lab']))
 def quality(f):
     x = feat(f); q = 0
-    q -= max(0, 30 - x['L']) * 2.2          # not too dark
+    q -= max(0, 36 - x['L']) * 2.5          # not too dark
     q -= max(0, x['L'] - 72) * 1.5          # not washed out
     q -= max(0, x['chroma'] - 48) * .8      # not candy
     return q
@@ -46,7 +46,10 @@ def trio_score(fs, bottle):
         d = dE(x, y); sc += min(d, 40) - (30 if d < 14 else 0) - max(0, d - 75) * .6
     sc -= max(0, max(Ls) - min(Ls) - 28) * 1.2                 # one lightness family
     r = feat(c); sc -= max(0, r['busy'] - 5) * 5.0              # calm behind the bottle
-    sc += min(float(np.linalg.norm(r['lab'] - bottle)), 45) * .7  # bottle stands out
+    db = float(np.linalg.norm(r['lab'] - bottle)); sc += min(db, 45) * .7 - (45 if db < 28 else 0)  # bottle stands out
+    if bottle[0] > 70 and r['L'] > 62: sc -= 35                 # white / clear bottle needs a mid-dark tile
+    if bottle[0] < 30 and r['L'] < 38: sc -= 35                 # black bottle needs a lighter tile
+    if sum(Ls) / 3 < 38: sc -= 30                               # no all-dark trios
     return sc
 PDF = {'ПРЕМИУМ|K9': [4, 1, 0], 'УНИСЕКС|H2': [6, 7, 5], 'ЖЕНСКИЕ|C3': [11, 12, 10], 'МУЖСКИЕ|J7': [16, 17, 15], 'УНИСЕКС|L22': [21, 22, 20], 'ЖЕНСКИЕ|J6': [26, 27, 25]}
 FIXED = {'ЖЕНСКИЕ|C3': [11, 10, 12]}   # peony, frangipani, vanilla behind the pink bottle
@@ -71,7 +74,7 @@ for d in base:
         imp = sum(SCORE[c[1]] for c in trio) - .15 * sum(c[3] for c in trio) + 8 * len({c[0] for c in trio}) - (12 if any(c[1] == 'musk' for c in trio) else 0)
         for perm in itertools.permutations(trio):
             for fs in itertools.product(*[pool[c[1]] for c in perm]):
-                sc = trio_score(fs, bottle) + 4 * imp - 2.5 * sum(use.get(f, 0) for f in fs)
+                sc = trio_score(fs, bottle) + 4 * imp - sum(2.5 * use.get(f, 0) + (40 if use.get(f, 0) >= 4 else 0) for f in fs)
                 if best is None or sc > best[0]: best = (sc, perm, fs)
     _, perm, fs = best
     for f in fs: use[f] = use.get(f, 0) + 1

@@ -120,8 +120,9 @@ def theme(note):
 
 QUERY = {k: q for k, q, s, w in THEMES}
 SCORE = {k: s for k, q, s, w in THEMES}
+SCORE.update(red_apple=5, vodka=4, champagne=5, carambola=5, gooseberry=5, violet_leaf=4, ice=4)
 
-OVERRIDE = {'тубероза': 'tuberose', 'индийская тубероза': 'tuberose', 'апельсиновый цвет': 'neroli', 'африканский апельсиновый цвет': 'neroli',
+OVERRIDE = {'красное яблоко': 'red_apple', 'засахаренное яблоко': 'red_apple', 'водка': 'vodka', 'шампанское': 'champagne', 'карамбола': 'carambola', 'крыжовник': 'gooseberry', 'лист фиалки': 'violet_leaf', 'лёд': 'ice', 'водяная лилия': 'lotus', 'морские водоросли': 'sea', 'бальзамическая пихта': 'cedar', 'пихтовый бальзам': 'cedar', 'бензоин': 'amber', 'сиамский бензоин': 'amber', 'жевательная резинка': 'cotton_candy', 'джин': 'vodka', 'текила': 'vodka', 'тубероза': 'tuberose', 'индийская тубероза': 'tuberose', 'апельсиновый цвет': 'neroli', 'африканский апельсиновый цвет': 'neroli',
             'цветок апельсина': 'neroli', 'цветок горького апельсина': 'neroli', 'табачный лист': 'tobacco', 'цветок табака': 'tobacco',
             'тростниковый сахар': 'caramel', 'акигалавуд': 'woods', 'джордживуд': 'woods', 'розифолия': 'rose', 'амбраром': 'amber',
             'кока-кола': 'caramel', 'цветок вишни': 'cherry_blossom', 'вишневый ликёр': 'cherry', 'засахаренный лимон': 'lemon'}
